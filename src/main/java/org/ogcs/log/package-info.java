@@ -1,5 +1,4 @@
 /**
- *
  * 仿tlog日志实现
  *
  * @author TinyZ.

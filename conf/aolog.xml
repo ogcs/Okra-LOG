@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<okra-log xmlns="http://tinyzzh.github.io/schema/okra-log">
+
+    <table version="1.0" name="log_money" desc="货币变更日志表">
+        <field name="logDate" type="DATETIME" desc="格式 YYYY-MM-DD HH:MM:SS"/>
+        <field name="openId" type="VARCHAR" length="50" isPrimaryKey="true"/>
+
+        <field name="io" type="TINYINT" desc="产出(1)/消耗(0)"/>
+        <field name="ioType" type="INT" desc="途径"/>
+        <field name="type" type="INT" desc="货币日志类型"/>
+        <field name="value" type="INT" desc="涉及值"/>
+        <field name="afterValue" type="INT" desc="变更之后"/>
+    </table>
+
+    <table version="1.0" name="log_level" desc="等级变更日志表">
+        <field name="logDate" type="DATETIME" desc="格式 YYYY-MM-DD HH:MM:SS"/>
+        <field name="openId" type="VARCHAR" length="50" isPrimaryKey="true"/>
+
+        <field name="io" type="TINYINT" desc="产出(1)/消耗(0)"/>
+        <field name="ioType" type="INT" desc="途径"/>
+        <field name="type" type="INT" desc="等级类型"/>
+        <field name="value" type="INT" desc="涉及值"/>
+        <field name="afterLevel" type="INT" desc="变更之后等级"/>
+        <field name="afterExp" type="INT" desc="变更之后经验值"/>
+    </table>
+
+    <table version="1.0" name="log_item" desc="道具日志表">
+        <field name="logDate" type="DATETIME" desc="格式 YYYY-MM-DD HH:MM:SS"/>
+        <field name="openId" type="VARCHAR" length="50" isPrimaryKey="true"/>
+
+        <field name="io" type="TINYINT" desc="产出(1)/消耗(0)"/>
+        <field name="ioType" type="INT" desc="途径"/>
+        <field name="itemId" type="INT" desc="道具id"/>
+        <field name="itemType" type="INT" desc="道具类型"/>
+        <field name="value" type="INT" desc="道具变动数量"/>
+        <field name="leftCount" type="INT" desc="变更之后道具数量"/>
+    </table>
+
+    <table version="1.0" name="log_hero" desc="英雄日志表">
+        <field name="logDate" type="DATETIME" desc="格式 YYYY-MM-DD HH:MM:SS"/>
+        <field name="openId" type="VARCHAR" length="50" isPrimaryKey="true"/>
+
+        <field name="io" type="TINYINT" desc="产出(1)/消耗(0)"/>
+        <field name="ioType" type="INT" desc="途径"/>
+        <field name="itemId" type="INT" desc="道具id"/>
+        <field name="itemType" type="INT" desc="道具类型"/>
+        <field name="value" type="INT" desc="道具变动数量"/>
+        <field name="leftCount" type="INT" desc="变更之后道具数量"/>
+    </table>
+
+
+</okra-log>
+

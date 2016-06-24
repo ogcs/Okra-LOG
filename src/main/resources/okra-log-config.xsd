@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+@author TinyZ at 20150505
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            targetNamespace="http://tinyzzh.github.io/schema/okra-log"
+            xmlns="http://tinyzzh.github.io/schema/okra-log"
+        >
+    <xsd:element name="okra-log-config">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="ipFilters" maxOccurs="unbounded" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element ref="ipFilter" maxOccurs="unbounded" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="port" type="xsd:int"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="ipFilter">
+        <xsd:complexType>
+            <xsd:attribute name="host" type="xsd:string"/>
+            <xsd:attribute name="port" type="xsd:int"/>
+        </xsd:complexType>
+    </xsd:element>
+
+
+</xsd:schema>

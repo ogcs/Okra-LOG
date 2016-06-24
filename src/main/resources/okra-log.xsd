@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+okra-log.xml文件的结构描述, 用于校验和检查相关字段
+@author TinyZ
+@date 20160624
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:okra-log="http://tinyzzh.github.io/schema/okra-log"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            targetNamespace="http://tinyzzh.github.io/schema/okra-log"
+            xmlns="http://tinyzzh.github.io/schema/okra-log"
+        >
+    <!--
+    使用XML Schemas Definition(XSD)的unique的时候
+    xpath必须有 => xmlns:okra-log="http://tinyzzh.github.io/schema/okra-log"
+    okra-log 用于指定 okra-log:table元素
+    -->
+    <xsd:element name="okra-log">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element maxOccurs="unbounded" ref="table"/>
+                <!--<xsd:element name="struct" maxOccurs="unbounded"/>-->
+            </xsd:sequence>
+        </xsd:complexType>
+        <xsd:unique name="tableColumnNameUnique">
+            <xsd:selector xpath="okra-log:table"/>
+            <xsd:field xpath="@name"/>
+        </xsd:unique>
+    </xsd:element>
+
+    <xsd:element name="table">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="field" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:attributeGroup ref="MysqlFieldAttribute"/>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+            <xsd:attributeGroup ref="MysqlTableAttribute"/>
+        </xsd:complexType>
+        <xsd:unique name="fieldColumnNameUnique">
+            <xsd:selector xpath="okra-log:field"/>
+            <xsd:field xpath="@name"/>
+        </xsd:unique>
+    </xsd:element>
+
+    <xsd:attributeGroup name="MysqlTableAttribute">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ MYSQL数据库表属性 ]]></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="version" type="xsd:double" use="required"/>
+        <xsd:attribute name="name" type="StrName" use="required"/>
+        <xsd:attribute name="database" type="StrName"/>
+        <xsd:attribute name="dbEngine" type="DBEngine"/>
+        <xsd:attribute name="charset" type="StrName" default="utf8"/>
+        <xsd:attribute name="collate" type="StrName" default="utf8_general_ci"/>
+        <xsd:attribute name="autoIncrement" type="xsd:int" default="1"/>
+        <xsd:attribute name="desc" type="xsd:string"/>
+    </xsd:attributeGroup>
+
+    <xsd:attributeGroup name="MysqlFieldAttribute">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ MYSQL数据库表字段属性 ]]></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="StrName" use="required"/>
+        <xsd:attribute name="type" type="DataType" use="required"/>
+        <xsd:attribute name="length" type="xsd:int"/>
+        <xsd:attribute name="defaultValue" type="xsd:string"/>
+        <xsd:attribute name="isPrimaryKey" type="xsd:boolean" default="false"/>
+        <xsd:attribute name="isNotNull" type="xsd:boolean" default="false"/>
+        <xsd:attribute name="isUnsigned" type="xsd:boolean" default="false"/>
+        <xsd:attribute name="isAutoIncrement" type="xsd:boolean" default="false"/>
+        <xsd:attribute name="isZeroFill" type="xsd:boolean" default="false"/>
+        <xsd:attribute name="charset" type="StrName" default="utf8"/>
+        <xsd:attribute name="collate" type="StrName" default="utf8_general_ci"/>
+        <xsd:attribute name="desc" type="xsd:string"/>
+    </xsd:attributeGroup>
+
+    <xsd:simpleType name="StrName">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ 命名规范,限定名称只能由a-zA-Z0-9和_  组成. ]]></xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[a-zA-Z0-9_]+"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="DBEngine">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ MYSQL数据库存储引擎 ]]></xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:NMTOKEN">
+            <xsd:enumeration value="InnoDB"/>
+            <xsd:enumeration value="MyISAM"/>
+            <xsd:enumeration value="MEMORY"/>
+            <xsd:enumeration value="ARCHIVE"/>
+            <xsd:enumeration value="BLACKHOLE"/>
+            <xsd:enumeration value="CSV"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="DataType">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ MYSQL数据类型 ]]></xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <!-- Numeric type -->
+            <xsd:enumeration value="BIT"/>
+            <xsd:enumeration value="TINYINT"/>
+            <xsd:enumeration value="SMALLINT"/>
+            <xsd:enumeration value="MEDIUMINT"/>
+            <xsd:enumeration value="INT"/>
+            <xsd:enumeration value="INTEGER"/>
+            <xsd:enumeration value="BIGINT"/>
+            <xsd:enumeration value="FLOAT"/>
+            <xsd:enumeration value="DOUBLE"/>
+            <xsd:enumeration value="DECIMAL"/>
+            <!-- Data type -->
+            <xsd:enumeration value="DATE"/>
+            <xsd:enumeration value="TIME"/>
+            <xsd:enumeration value="YEAR"/>
+            <xsd:enumeration value="DATETIME"/>
+            <xsd:enumeration value="TIMESTAMP"/>
+            <!-- String type -->
+            <xsd:enumeration value="CHAR"/>
+            <xsd:enumeration value="VARCHAR"/>
+            <xsd:enumeration value="TINYBLOB"/>
+            <xsd:enumeration value="TINYTEXT"/>
+            <xsd:enumeration value="BLOB"/>
+            <xsd:enumeration value="TEXT"/>
+            <xsd:enumeration value="MEDIUMBLOB"/>
+            <xsd:enumeration value="MEDIUMTEXT"/>
+            <xsd:enumeration value="LONGBLOB"/>
+            <xsd:enumeration value="LONGTEXT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>
