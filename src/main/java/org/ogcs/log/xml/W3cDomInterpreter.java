@@ -51,6 +51,7 @@ public final class W3cDomInterpreter implements XmlInterpreter<Table> {
 
     public W3cDomInterpreter(String path) {
         this.path = path;
+        this.tables = new HashMap<>();
     }
 
     //    public Map<String, Table> interpretXml() {
@@ -59,7 +60,6 @@ public final class W3cDomInterpreter implements XmlInterpreter<Table> {
 
     public Map<String, Table> interpretXml(String filePath) {
         this.path = filePath;
-        this.tables = new HashMap<>();
         return interpretXml(filePath, Table.class, Field.class);
     }
 
