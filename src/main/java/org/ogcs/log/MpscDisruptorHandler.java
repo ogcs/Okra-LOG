@@ -16,10 +16,16 @@
 
 package org.ogcs.log;
 
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.ogcs.log.mysql.Table;
 import org.ogcs.utilities.StringUtil;
 
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -30,60 +36,41 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author TinyZ
  * @date 2016/6/24.
  */
+@Sharable
 public class MpscDisruptorHandler extends SimpleChannelInboundHandler<String>{
+
+    private static final Logger LOG = LogManager.getLogger(MpscDisruptorHandler.class);
 
     public static final char DEFAULT_SEPARATOR  = '|';
 
-    protected static final AtomicLong mqSize = new AtomicLong();
     protected static final Queue<String[]> messageQueue = new ConcurrentLinkedQueue<>();
 
+    protected Map<String/*Table.name*/, Queue<String[]>> queue;
 
     public MpscDisruptorHandler() {
-        init();
+
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String msg) throws Exception {
         String[] split = StringUtil.split(msg, DEFAULT_SEPARATOR);
-
-        if (mqSize.get() > 1000000) {
-
-            // TODO: 队列太长啦
+        Table table = AoContext.INSTANCE.XML.getTable(split[0]);
+        if (table == null) {
+            LOG.error("Unknown table [ " + split[0] + " ], msg : " + msg);
+            return;
         }
+        Queue<String[]> msgQueue = queue.get(split[0]);
+        if (msgQueue == null) {
+            msgQueue = new ConcurrentLinkedQueue<>();
+            queue.put(split[0], msgQueue);
+        }
+        msgQueue.add(split); // 重新拷贝一份
+
 
         messageQueue.add(split);
-        mqSize.incrementAndGet();
 
 
 
-    }
-
-    public void init() {
-        new Thread(()->{
-
-
-
-
-            while(true) {
-                try {
-                    if (messageQueue.isEmpty()) {
-                        String[] poll = messageQueue.poll();
-
-
-
-
-                    } else {
-                        Thread.sleep(5);
-                    }
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    // TODO: 捕获处理异常
-
-                }
-            }
-        }).start();
     }
 
 

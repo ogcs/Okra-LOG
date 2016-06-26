@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.xml;
+package org.ogcs.log.parser;
 
 import java.util.Map;
 
 /**
- * XML interpreter.
+ * Database table's struct mapper parser.
  *
  * @author TinyZ
  * @date 2016-06-24
  * @since 1.0
  */
-public interface XmlInterpreter<Table> {
+public interface StructParser<T> {
 
     /**
-     * XML element table. The table defined mysql table attribute and field data.
+     * Struct table lab. The table defined mysql table attribute and field data.
      */
-    String XML_ELEMENT_TABLE = "table";
+    String STRUCT_TABLE = "table";
 
     /**
-     * XML element field, The field element is table's child element. use to defined field attribute.
+     * Struct field lab, The field element is table's child element. use to defined field attribute.
      */
-    String XML_ELEMENT_FIELD = "field";
+    String STRUCT_FIELD = "field";
 
     /**
      * Get {@link org.ogcs.log.mysql.Table}  form tables pool by unique tableName.
@@ -44,60 +44,60 @@ public interface XmlInterpreter<Table> {
      * @param name unique tableName.
      * @return Return The table is it exist, if tables pool size is zero, will load XML config file to initialize table pool.
      */
-    Table getTable(String name);
+    T getTable(String name);
 
     /**
      * Get all {@link org.ogcs.log.mysql.Table}
      *
-     * @return Return all registered Table
+     * @return Return all registered T
      */
-    Map<String, Table> getAllTables();
+    Map<String, T> getAll();
 
     /**
-     * Reload xml file
-     */
-    void reload();
-
-    /**
-     * Reload xml file and return the tables
-     *
-     * @param filePath xml file path
-     * @return Return the table map
-     */
-    Map<String, Table> loadXML(String filePath);
-
-    /**
-     * Reload xml file , replace tables data and  return the tables
-     *
-     * @param filePath xml file path
-     * @return Return the table map
-     */
-    Map<String, Table> loadXmlAndReplace(String filePath);
-
-    /**
-     * Load xml file
-     */
-    void load();
-
-    /**
-     * If the xml is load and tables data is initialized
+     * If the struct defined is load and tables data is initialized
      *
      * @return Return true if the tables data is initialized, false otherwise.
      */
     boolean isInitialized();
 
     /**
-     * After execute loadXML method and verify the table map . Use this method to replace the table data
+     * Load struct defined file
+     */
+    void load();
+
+    /**
+     * Reload struct defined file and return the tables
+     *
+     * @param filePath The struct defined file path
+     * @return Return the table map
+     */
+    Map<String, T> load(String filePath);
+
+    /**
+     * Reload struct defined file
+     */
+    void reload();
+
+    /**
+     * Reload struct defined file , replace tables data and  return the tables
+     *
+     * @param filePath xml file path
+     * @return Return the table map
+     */
+    Map<String, T> loadAndReplace(String filePath);
+
+    /**
+     * After execute load method and verify the table map . Use this method to replace the table data
      *
      * @param tables The table map
      */
-    void replace(Map<String, Table> tables);
+    void replace(Map<String, T> tables);
 
     /**
-     * After execute loadXML method and verify the table map . Use this method to replace the table data and filepath
+     * After execute load method and verify the table map . Use this method to replace the table data and filepath
      *
      * @param tables   The table map
      * @param filePath The eys of sauron log system struct file path
      */
-    void replace(Map<String, Table> tables, String filePath);
+    void replace(Map<String, T> tables, String filePath);
 }

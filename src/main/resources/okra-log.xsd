@@ -9,17 +9,19 @@ okra-log.xml文件的结构描述, 用于校验和检查相关字段
             attributeFormDefault="unqualified"
             targetNamespace="http://tinyzzh.github.io/schema/okra-log"
             xmlns="http://tinyzzh.github.io/schema/okra-log"
-        >
-    <!--
-    使用XML Schemas Definition(XSD)的unique的时候
-    xpath必须有 => xmlns:okra-log="http://tinyzzh.github.io/schema/okra-log"
-    okra-log 用于指定 okra-log:table元素
-    -->
+>
     <xsd:element name="okra-log">
+        <xsd:annotation>
+            <xsd:documentation>
+                <![CDATA[ 定义日志描述文件结构.
+                当使用unique标签时[xpath="okra-log:table"], 实现xml文档中所有table的name属性值[xpath="@name"]唯一
+                okra-log需要在xmlns中定义[xmlns:okra-log="http://tinyzzh.github.io/schema/okra-log"]
+                ]]>
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element maxOccurs="unbounded" ref="table"/>
-                <!--<xsd:element name="struct" maxOccurs="unbounded"/>-->
             </xsd:sequence>
         </xsd:complexType>
         <xsd:unique name="tableColumnNameUnique">
@@ -33,11 +35,11 @@ okra-log.xml文件的结构描述, 用于校验和检查相关字段
             <xsd:sequence>
                 <xsd:element name="field" maxOccurs="unbounded">
                     <xsd:complexType>
-                        <xsd:attributeGroup ref="MysqlFieldAttribute"/>
+                        <xsd:attributeGroup ref="MySQLFieldAttribute"/>
                     </xsd:complexType>
                 </xsd:element>
             </xsd:sequence>
-            <xsd:attributeGroup ref="MysqlTableAttribute"/>
+            <xsd:attributeGroup ref="MySQLTableAttribute"/>
         </xsd:complexType>
         <xsd:unique name="fieldColumnNameUnique">
             <xsd:selector xpath="okra-log:field"/>
@@ -45,9 +47,9 @@ okra-log.xml文件的结构描述, 用于校验和检查相关字段
         </xsd:unique>
     </xsd:element>
 
-    <xsd:attributeGroup name="MysqlTableAttribute">
+    <xsd:attributeGroup name="MySQLTableAttribute">
         <xsd:annotation>
-            <xsd:documentation><![CDATA[ MYSQL数据库表属性 ]]></xsd:documentation>
+            <xsd:documentation><![CDATA[ 数据库表拥有的属性 ]]></xsd:documentation>
         </xsd:annotation>
         <xsd:attribute name="version" type="xsd:double" use="required"/>
         <xsd:attribute name="name" type="StrName" use="required"/>
@@ -59,9 +61,9 @@ okra-log.xml文件的结构描述, 用于校验和检查相关字段
         <xsd:attribute name="desc" type="xsd:string"/>
     </xsd:attributeGroup>
 
-    <xsd:attributeGroup name="MysqlFieldAttribute">
+    <xsd:attributeGroup name="MySQLFieldAttribute">
         <xsd:annotation>
-            <xsd:documentation><![CDATA[ MYSQL数据库表字段属性 ]]></xsd:documentation>
+            <xsd:documentation><![CDATA[ 数据库表字段拥有的属性 ]]></xsd:documentation>
         </xsd:annotation>
         <xsd:attribute name="name" type="StrName" use="required"/>
         <xsd:attribute name="type" type="DataType" use="required"/>
@@ -79,7 +81,7 @@ okra-log.xml文件的结构描述, 用于校验和检查相关字段
 
     <xsd:simpleType name="StrName">
         <xsd:annotation>
-            <xsd:documentation><![CDATA[ 命名规范,限定名称只能由a-zA-Z0-9和_  组成. ]]></xsd:documentation>
+            <xsd:documentation><![CDATA[ 命名规范,限定名称字符串仅允许由a-zA-Z0-9和_  组成. ]]></xsd:documentation>
         </xsd:annotation>
         <xsd:restriction base="xsd:string">
             <xsd:pattern value="[a-zA-Z0-9_]+"/>
@@ -88,7 +90,7 @@ okra-log.xml文件的结构描述, 用于校验和检查相关字段
 
     <xsd:simpleType name="DBEngine">
         <xsd:annotation>
-            <xsd:documentation><![CDATA[ MYSQL数据库存储引擎 ]]></xsd:documentation>
+            <xsd:documentation><![CDATA[ MySQL数据库支持的存储引擎枚举. ]]></xsd:documentation>
         </xsd:annotation>
         <xsd:restriction base="xsd:NMTOKEN">
             <xsd:enumeration value="InnoDB"/>
@@ -102,7 +104,7 @@ okra-log.xml文件的结构描述, 用于校验和检查相关字段
 
     <xsd:simpleType name="DataType">
         <xsd:annotation>
-            <xsd:documentation><![CDATA[ MYSQL数据类型 ]]></xsd:documentation>
+            <xsd:documentation><![CDATA[ MySQL支持的数据类型枚举. ]]></xsd:documentation>
         </xsd:annotation>
         <xsd:restriction base="xsd:string">
             <!-- Numeric type -->

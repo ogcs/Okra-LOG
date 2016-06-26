@@ -17,6 +17,9 @@
 package org.ogcs.log.disruptor;
 
 import com.lmax.disruptor.EventFactory;
+import org.ogcs.log.mysql.Table;
+
+import java.util.List;
 
 /**
  * @author TinyZ
@@ -24,13 +27,20 @@ import com.lmax.disruptor.EventFactory;
  */
 public class AoEvent {
 
+    private Table table;
     private String[] params;
+    private List<String[]> list;
 
-    public void setValues(String[] params) {
+    public void setValues(Table table, String[] params) {
+        this.table = table;
         this.params = params;
     }
 
-    public String[] get() {
+    public Table table() {
+        return table;
+    }
+
+    public String[] params() {
         return params;
     }
 

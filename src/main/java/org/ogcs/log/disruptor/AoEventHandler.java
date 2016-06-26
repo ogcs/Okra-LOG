@@ -23,24 +23,49 @@ import org.ogcs.log.mysql.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 public class AoEventHandler implements EventHandler<AoEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AoEventHandler.class);
 
     @Override
     public void onEvent(AoEvent event, long sequence, boolean endOfBatch) {
-        String[] data = event.get();
+        String[] data = event.params();
         if (data != null) {
             try {
                 Table table = AoContext.INSTANCE.XML.getTable(data[0]);
                 if (table != null) {
                     String query = MySQL2.sqlInsert(table, data);
 
+                    DataSource dataSource = null;
+                    try {
+                        Connection connection = dataSource.getConnection();
+                        PreparedStatement stat = (PreparedStatement) connection.createStatement();
+
+                        PreparedStatement preparedStatement = connection.prepareStatement("");
+
+                        stat.executeLargeUpdate();
+                        stat.execute("");
+
+                        stat.setString(0, "");
+
+
+
+
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
 
 
                 }
             } finally {
-                event.setValues(null);
+                event.setValues(null, null);
             }
         }
 

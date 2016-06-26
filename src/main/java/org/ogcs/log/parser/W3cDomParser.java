@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.xml;
+package org.ogcs.log.parser;
 
 import org.ogcs.log.mysql.Field;
 import org.ogcs.log.mysql.Table;
+import org.ogcs.log.util.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -43,13 +44,13 @@ import java.util.Map;
  * @date 2016-06-24.
  * @since 1.0
  */
-public final class W3cDomInterpreter implements XmlInterpreter<Table> {
+public final class W3cDomParser implements StructParser<Table> {
 
     private boolean isInitialized = false;
     private Map<String, Table> tables;
     private String path;
 
-    public W3cDomInterpreter(String path) {
+    public W3cDomParser(String path) {
         this.path = path;
         this.tables = new HashMap<>();
     }
@@ -93,14 +94,14 @@ public final class W3cDomInterpreter implements XmlInterpreter<Table> {
         NodeList nodeListTable = rootNode.getChildNodes();
         for (int i = 0; i < nodeListTable.getLength(); i++) {
             Node nodeTable = nodeListTable.item(i);
-            if (XML_ELEMENT_TABLE.equals(nodeTable.getNodeName())) {
+            if (STRUCT_TABLE.equals(nodeTable.getNodeName())) {
                 final T table = initObj(clzOfTable, nodeTable.getAttributes());
                 if (table != null) {
                     NodeList nodeListField = nodeTable.getChildNodes();
                     List<F> arrayField = new ArrayList<>();
                     for (int j = 0; j < nodeListField.getLength(); j++) {
                         final Node fieldNode = nodeListField.item(j);
-                        if (null != fieldNode && XML_ELEMENT_FIELD.equals(fieldNode.getNodeName())) {
+                        if (null != fieldNode && STRUCT_FIELD.equals(fieldNode.getNodeName())) {
                             final F f = initObj(clzOfField, fieldNode.getAttributes());
                             if (f != null) {
                                 arrayField.add(f);
@@ -168,7 +169,7 @@ public final class W3cDomInterpreter implements XmlInterpreter<Table> {
     }
 
     @Override
-    public Map<String, Table> getAllTables() {
+    public Map<String, Table> getAll() {
         checkAndInitialize();
         return tables;
     }
@@ -179,7 +180,7 @@ public final class W3cDomInterpreter implements XmlInterpreter<Table> {
     }
 
     @Override
-    public Map<String, Table> loadXML(String filePath) {
+    public Map<String, Table> load(String filePath) {
         if (XmlUtil.validateXml(filePath)) {
             throw new IllegalStateException("XSD file is wrong");
         }
@@ -191,8 +192,8 @@ public final class W3cDomInterpreter implements XmlInterpreter<Table> {
     }
 
     @Override
-    public Map<String, Table> loadXmlAndReplace(String filePath) {
-        Map<String, Table> newTables = loadXML(filePath);
+    public Map<String, Table> loadAndReplace(String filePath) {
+        Map<String, Table> newTables = load(filePath);
         if (newTables != null) {
             this.replace(newTables, filePath);
             return newTables;
@@ -202,7 +203,7 @@ public final class W3cDomInterpreter implements XmlInterpreter<Table> {
 
     @Override
     public void load() {
-        tables = loadXML(path);
+        tables = load(path);
         isInitialized = true;
     }
 

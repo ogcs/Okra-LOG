@@ -25,6 +25,7 @@ import com.lmax.disruptor.dsl.ProducerType;
 import org.ogcs.log.disruptor.AoEvent;
 import org.ogcs.log.disruptor.AoEventHandler;
 
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Executors;
 
@@ -36,15 +37,17 @@ public class LogProcessor implements Runnable {
 
     private static final int ringBufferSize = 1024 * 128;
     protected Disruptor<AoEvent> disruptor;
-    protected Queue<String[]> messageQueue;
+    protected Queue<AoEvent> messageQueue;
 
-    public LogProcessor(Queue<String[]> messageQueue) {
+
+
+    public LogProcessor(Queue<AoEvent> messageQueue) {
         this(messageQueue, new Disruptor<>(
                 AoEvent.DEFAULT_EVENT_FACTORY, ringBufferSize, Executors.newCachedThreadPool(), ProducerType.SINGLE, new BlockingWaitStrategy()
         ), new AoEventHandler(), null);
     }
 
-    public LogProcessor(Queue<String[]> messageQueue, Disruptor<AoEvent> disruptor, EventHandler<AoEvent> handler, ExceptionHandler<AoEvent> exceptionHandler) {
+    public LogProcessor(Queue<AoEvent> messageQueue, Disruptor<AoEvent> disruptor, EventHandler<AoEvent> handler, ExceptionHandler<AoEvent> exceptionHandler) {
         if (messageQueue == null) {
             throw new NullPointerException("messageQueue");
         }
@@ -62,14 +65,20 @@ public class LogProcessor implements Runnable {
     public void run() {
         while (true) {
             try {
-                if (messageQueue.isEmpty()) {
-                    String[] poll = messageQueue.poll();
+
+
+
+
+
+
+                if (!messageQueue.isEmpty()) {
+                    AoEvent poll = messageQueue.poll();
                     if (poll != null) {
                         RingBuffer<AoEvent> ringBuffer = disruptor.getRingBuffer();
                         long next = ringBuffer.next();
                         try {
                             AoEvent aoEvent = ringBuffer.get(next);
-                            aoEvent.setValues(poll);
+                            aoEvent.setValues(poll.table(), poll.params());
                         } finally {
                             ringBuffer.publish(next);
                         }

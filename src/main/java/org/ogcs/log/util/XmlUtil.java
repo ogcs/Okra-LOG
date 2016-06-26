@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.xml;
+package org.ogcs.log.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
