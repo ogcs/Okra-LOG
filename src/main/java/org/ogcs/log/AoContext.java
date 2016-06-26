@@ -16,7 +16,7 @@
 
 package org.ogcs.log;
 
-import org.ogcs.log.mysql.Table;
+import org.ogcs.log.parser.Table;
 import org.ogcs.log.parser.W3cDomParser;
 import org.ogcs.log.parser.StructParser;
 
@@ -29,6 +29,17 @@ public enum AoContext {
     INSTANCE;
 
     public final StructParser<Table> XML = new W3cDomParser("");
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

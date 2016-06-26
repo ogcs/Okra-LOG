@@ -3,7 +3,7 @@ package org.ogcs.log;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.Test;
-import org.ogcs.log.mysql.Table;
+import org.ogcs.log.parser.Table;
 import org.ogcs.log.parser.W3cDomParser;
 import org.ogcs.utilities.StringUtil;
 
@@ -14,9 +14,9 @@ import java.util.List;
  * @author TinyZ
  * @date 2016/6/26.
  */
-public class AsyncRecordTaskTest {
+public class LogRecordTaskTest {
 
-    public static AsyncRecordTask task;
+    public static LogRecordTask task;
 
     static {
         // datasource
@@ -36,7 +36,7 @@ public class AsyncRecordTaskTest {
             list.add(StringUtil.split(str, '|'));
         }
 
-        task = new AsyncRecordTask(dataSource, logMoney, list);
+        task = new LogRecordTask(dataSource, logMoney, list);
     }
 
     @Test

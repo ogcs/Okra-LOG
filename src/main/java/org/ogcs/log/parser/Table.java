@@ -1,4 +1,4 @@
-package org.ogcs.log.mysql;
+package org.ogcs.log.parser;
 
 /**
  * MySQL table bean.
@@ -17,7 +17,11 @@ public class Table<F extends Field> {
     private F[] fields;
 
     /**
-     * The table's version . use to check and update table
+     * The table prepare query sql.
+     */
+    private String prepareQuery;
+    /**
+     * The table's version. use to check and update table
      */
     private double version = 0.0;
 

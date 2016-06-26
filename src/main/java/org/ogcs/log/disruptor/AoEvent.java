@@ -17,7 +17,7 @@
 package org.ogcs.log.disruptor;
 
 import com.lmax.disruptor.EventFactory;
-import org.ogcs.log.mysql.Table;
+import org.ogcs.log.parser.Table;
 
 import java.util.List;
 

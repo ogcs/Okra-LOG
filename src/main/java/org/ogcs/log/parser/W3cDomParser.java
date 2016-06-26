@@ -16,8 +16,8 @@
 
 package org.ogcs.log.parser;
 
-import org.ogcs.log.mysql.Field;
-import org.ogcs.log.mysql.Table;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ogcs.log.util.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -46,6 +46,7 @@ import java.util.Map;
  */
 public final class W3cDomParser implements StructParser<Table> {
 
+    private static final Logger LOG = LogManager.getLogger(W3cDomParser.class);
     private boolean isInitialized = false;
     private Map<String, Table> tables;
     private String path;
@@ -82,7 +83,7 @@ public final class W3cDomParser implements StructParser<Table> {
                 }
             }
         } catch (SAXException | IOException e) {
-            e.printStackTrace();
+            LOG.warn("Document parse error.", e);
         }
         if (childNodes == null) {
             return null;

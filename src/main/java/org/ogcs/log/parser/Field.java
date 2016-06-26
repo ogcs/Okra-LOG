@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.mysql;
+package org.ogcs.log.parser;
+
+import org.ogcs.log.mysql.DataType;
 
 /**
  * MySQL table's field bean.

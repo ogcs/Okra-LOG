@@ -19,7 +19,7 @@ package org.ogcs.log.disruptor;
 import com.lmax.disruptor.EventHandler;
 import org.ogcs.log.AoContext;
 import org.ogcs.log.mysql.MySQL2;
-import org.ogcs.log.mysql.Table;
+import org.ogcs.log.parser.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class AoEventHandler implements EventHandler<AoEvent> {
 

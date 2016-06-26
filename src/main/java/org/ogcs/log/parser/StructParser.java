@@ -38,7 +38,7 @@ public interface StructParser<T> {
     String STRUCT_FIELD = "field";
 
     /**
-     * Get {@link org.ogcs.log.mysql.Table}  form tables pool by unique tableName.
+     * Get {@link Table}  form tables pool by unique tableName.
      * <p>The table name must be lowercase</p>
      *
      * @param name unique tableName.
@@ -47,7 +47,7 @@ public interface StructParser<T> {
     T getTable(String name);
 
     /**
-     * Get all {@link org.ogcs.log.mysql.Table}
+     * Get all {@link Table}
      *
      * @return Return all registered T
      */

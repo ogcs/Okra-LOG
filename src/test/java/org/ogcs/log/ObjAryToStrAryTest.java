@@ -17,10 +17,10 @@
 package org.ogcs.log;
 
 import org.junit.Test;
-import org.ogcs.log.mysql.Field;
-import org.ogcs.log.mysql.MySQL3;
-import org.ogcs.log.mysql.Table;
+import org.ogcs.log.parser.Field;
+import org.ogcs.log.parser.Table;
 import org.ogcs.log.parser.W3cDomParser;
+import org.ogcs.log.util.MySQL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class ObjAryToStrAryTest {
         W3cDomParser w3c = new W3cDomParser("conf/aolog.xml");
         Table logMoney = w3c.getTable("log_money");
 
-        System.out.println(MySQL3.prepareQuery(logMoney));
+        System.out.println(MySQL.prepareQuery(logMoney));
 
         fields = logMoney.getFields();
     }

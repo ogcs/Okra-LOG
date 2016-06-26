@@ -16,6 +16,8 @@
 
 package org.ogcs.log.mysql;
 
+import org.ogcs.log.parser.Field;
+import org.ogcs.log.parser.Table;
 import org.ogcs.utilities.StringUtil;
 
 import java.sql.ResultSet;
