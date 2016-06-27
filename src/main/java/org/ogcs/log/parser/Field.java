@@ -16,6 +16,8 @@
 
 package org.ogcs.log.parser;
 
+import org.ogcs.utilities.StringUtil;
+
 import org.ogcs.log.mysql.DataType;
 
 /**
@@ -82,10 +84,11 @@ public class Field {
     public Field(String name, String type, String length, String defaultValue, boolean isPrimaryKey, boolean isNotNull, boolean isUnsigned, boolean isAutoIncrement, String charset, String collate, String desc) {
         this.name = name;
         this.type = type;
-        if (length != null && !"".equals(length)) {
+
+        if (!StringUtil.isEmpty(length)) {
             this.length = length;
         }
-        if (defaultValue != null && !"".equals(defaultValue)) {
+        if (!StringUtil.isEmpty(defaultValue)) {
             this.defaultValue = defaultValue;
         }
         this.isPrimaryKey = isPrimaryKey;
@@ -96,14 +99,13 @@ public class Field {
         if (verify(DataType.Codes.AUTO_INCREMENT)) {
             this.isAutoIncrement = isAutoIncrement;
         }
-        this.isZeroFill = isZeroFill;
-        if (charset != null && verify(DataType.Codes.HAS_CHARSET)) {
+        if (!StringUtil.isEmpty(charset) && verify(DataType.Codes.HAS_CHARSET)) {
             this.charset = charset;
         }
-        if (collate != null && verify(DataType.Codes.HAS_COLLATE)) {
+        if (!StringUtil.isEmpty(collate) && verify(DataType.Codes.HAS_COLLATE)) {
             this.collate = collate;
         }
-        if (desc != null && !"".equals(desc)) {
+        if (!StringUtil.isEmpty(desc)) {
             this.desc = desc;
         }
     }
