@@ -25,6 +25,8 @@ import com.lmax.disruptor.dsl.ProducerType;
 import org.ogcs.log.disruptor.AoEvent;
 import org.ogcs.log.disruptor.AoEventHandler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Executors;
@@ -66,6 +68,8 @@ public class LogProcessor implements Runnable {
         while (true) {
             try {
 
+
+                List<String[]> list = new ArrayList<>();
 
 
 
