@@ -24,7 +24,7 @@ import org.ogcs.log.mysql.DataType;
  * MySQL table's field bean.
  *
  * @author TinyZ
- * @date 2015-04-29.
+ * @date 2016-07-01.
  * @since 1.0
  */
 public class Field {
