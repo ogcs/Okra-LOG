@@ -1,3 +1,19 @@
+/*
+ *     Copyright 2016-2026 TinyZ
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.ogcs.log.parser;
 
 /**
@@ -6,6 +22,10 @@ package org.ogcs.log.parser;
  * @since 1.0
  */
 public class Table<F extends Field> {
+
+    private static final String DEFAULT_DB_ENGINE = "InnoDB";
+    private static final String DEFAULT_CHARSET = "utf8";
+    private static final String DEFAULT_COLLATE = "utf8_general_ci";
 
     private String database;
     private String name;
@@ -16,34 +36,32 @@ public class Table<F extends Field> {
     private int autoIncrement = 1;
     private F[] fields;
 
-    /**
-     * The table prepare query sql.
-     */
-    private String prepareQuery;
-    /**
-     * The table's version. use to check and update table
-     */
-    private double version = 0.0;
-
+    @Deprecated
     public Table() {
     }
 
-    public Table(String database) {
-        this.database = database;
+    public Table(String name, F[] fields) {
+        this(null, name, DEFAULT_DB_ENGINE, DEFAULT_CHARSET, DEFAULT_COLLATE, null, 0, fields);
     }
 
-    public double version() {
-        return version;
+    public Table(String database, String name, String dbEngine, String charset, String collate, String desc, int autoIncrement, F[] fields) {
+        this.database = database;
+        this.name = name;
+        this.dbEngine = dbEngine;
+        this.charset = charset;
+        this.collate = collate;
+        this.desc = desc;
+        this.autoIncrement = autoIncrement;
+        this.fields = fields;
     }
 
     public String getDatabase() {
         return database;
     }
 
-    //  --------------- Can't change database -----------
-//    public void setDatabase(String database) {
-//        this.database = database;
-//    }
+    public void setDatabase(String database) {
+        this.database = database;
+    }
 
     public String getName() {
         return name;
@@ -99,19 +117,5 @@ public class Table<F extends Field> {
 
     public void setFields(F[] fields) {
         this.fields = fields;
-    }
-
-    /**
-     * The method is replaced by version()
-     *
-     * @return Return the table version
-     */
-    @Deprecated
-    public double getVersion() {
-        return version;
-    }
-
-    public void setVersion(double version) {
-        this.version = version;
     }
 }

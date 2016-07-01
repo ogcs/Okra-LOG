@@ -16,6 +16,8 @@
 
 package org.ogcs.log.parser;
 
+import org.ogcs.utilities.StringUtil;
+
 /**
  * @author TinyZ
  * @date 2016-06-29.
@@ -31,9 +33,6 @@ public class TableBuilder<F extends Field> implements Builder<Table<F>> {
     private int autoIncrement = 1;
     private F[] fields;
 
-    private String prepareQuery;
-    private double version = 0.0;
-
     @Override
     public TableBuilder newBuilder() {
         return new TableBuilder<>();
@@ -41,8 +40,16 @@ public class TableBuilder<F extends Field> implements Builder<Table<F>> {
 
     @Override
     public Table<F> build() {
-        return new Table<>(database)
-                ;
+        if (name == null) throw new NullPointerException("name");
+        if (fields == null || fields.length <= 0) throw new NullPointerException("fields");
+        if (StringUtil.isEmpty(dbEngine))
+            this.dbEngine = "InnoDB";
+        if (StringUtil.isEmpty(charset))
+            this.charset = "utf8";
+        if (StringUtil.isEmpty(collate))
+            this.collate = "utf8_general_ci";
+        autoIncrement = autoIncrement < 0 ? 0 : autoIncrement;
+        return new Table<>(database, name, dbEngine, charset, collate, desc, autoIncrement, fields);
     }
 
     public TableBuilder setDatabase(String database) {
@@ -82,16 +89,6 @@ public class TableBuilder<F extends Field> implements Builder<Table<F>> {
 
     public TableBuilder setFields(F[] fields) {
         this.fields = fields;
-        return this;
-    }
-
-    public TableBuilder setPrepareQuery(String prepareQuery) {
-        this.prepareQuery = prepareQuery;
-        return this;
-    }
-
-    public TableBuilder setVersion(double version) {
-        this.version = version;
         return this;
     }
 }
