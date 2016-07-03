@@ -18,11 +18,21 @@ package org.ogcs.log.util;
 
 import org.ogcs.log.mysql.DataType;
 import org.ogcs.log.parser.Field;
+import org.ogcs.log.parser.FieldBuilder;
 import org.ogcs.log.parser.Table;
+import org.ogcs.log.parser.TableBuilder;
 import org.ogcs.utilities.StringUtil;
 
-import static org.ogcs.log.mysql.DataType.*;
-import static org.ogcs.log.mysql.DataType.Codes.*;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.ogcs.log.mysql.DataType.Codes.NUMERIC_TYPE;
+import static org.ogcs.log.mysql.DataType.verify;
 
 /**
  * @author TinyZ
@@ -33,8 +43,278 @@ public final class MySQL {
     private MySQL() {
         //no-op
     }
+
+    public static Table<Field> newTable(DataSource dataSource, String database, String tableName) throws SQLException {
+        if (dataSource == null) throw new NullPointerException("dataSource");
+        if (tableName == null) throw new NullPointerException("tableName");
+        Connection con = dataSource.getConnection();
+        Statement stat = con.createStatement();
+        stat.execute(showTableStatusSQL(database, tableName));
+        ResultSet resultSet = stat.getResultSet();
+        TableBuilder<Field> builder = TableBuilder.newBuilder();
+        if (resultSet.first()) {
+            // 1. Table information
+            builder.setName(resultSet.getString("Name"));
+            builder.setEngine(resultSet.getString("Engine"));
+            String autoIncrement = resultSet.getString("Auto_increment");
+            builder.setIncr(StringUtil.isEmpty(autoIncrement) ? 0 : Integer.valueOf(autoIncrement));
+            builder.setCollate(resultSet.getString("Collation"));
+            builder.setDesc(resultSet.getString("Comment"));
+            // 2. Field information
+            stat.execute(showFullFieldSQL(database, tableName));
+            ResultSet fieldSet = stat.getResultSet();
+            if (fieldSet != null) {
+                Field[] fields = statFields(fieldSet);
+                if (fields == null) {
+                    throw new NullPointerException("statFields");
+                }
+                builder.setFields(fields);
+            }
+        }
+        return builder.build();
+    }
+
     /**
+     * Get Table from database
      *
+     * @param statement The {@link Statement}
+     * @param database  The database name
+     * @param tableName The table name
+     * @return Return {@link Table} instance is the table exist, null otherwise.
+     * @throws SQLException
+     */
+    public static Table<Field> createTableBySql(Statement statement, String database, String tableName) throws SQLException {
+        if (statement == null) {
+            throw new NullPointerException("statement");
+        }
+        if (tableName == null) {
+            throw new NullPointerException("tableName");
+        }
+        String sqlShowTableStatus = org.ogcs.log.mysql.MySQL.sqlShowTableStatus(database, tableName);
+        String sqlShowFullField = org.ogcs.log.mysql.MySQL.sqlShowFullField(database, tableName);
+        statement.execute(sqlShowTableStatus);
+// 获取字段名
+//        ResultSetMetaData metaData = statement.getResultSet().getMetaData();
+//        System.out.println(metaData.getColumnCount());
+//        for (int i = 0; i < metaData.getColumnCount(); i++) {
+//            String columnName = metaData.getColumnName(i + 1);
+//            System.out.println(columnName);
+//        }
+        Table<Field> table = null;
+        ResultSet tableSet = statement.getResultSet();
+        if (tableSet.first()) {
+            table = new Table<Field>();
+            // 1. Table information
+            table.setName(tableSet.getString("Name"));
+            table.setDbEngine(tableSet.getString("Engine"));
+            String Auto_increment = tableSet.getString("Auto_increment");
+            table.setAutoIncrement(StringUtil.isEmpty(Auto_increment) ? 0 : Integer.valueOf(Auto_increment));
+            table.setCollate(tableSet.getString("Collation"));
+            table.setDesc(tableSet.getString("Comment"));
+            // 2. Field information
+            statement.execute(sqlShowFullField);
+            ResultSet fieldSet = statement.getResultSet();
+            if (fieldSet != null) {
+                Field[] fields = statFields(fieldSet);
+                if (fields == null) {
+                    throw new NullPointerException("statFields");
+                }
+                table.setFields(fields);
+            }
+        }
+        return table;
+    }
+
+    //  Field|Type|Collation|Null|Key|Default|Extra|Privileges|Comment
+    //  uid|int(10) unsigned|(Null)|NO|PRI|auto_increment|select,insert,update,references|
+    //  onlyId|int(11)|(Null)|NO||(Null)||select,insert,update,references|
+    //  name|varchar(20)|utf8_general_ci|NO||(Null)|select,insert,update,references|
+
+
+    public static Field[] statFields1(ResultSet fieldSet) throws SQLException {
+        List<Field> list = null;
+        while (fieldSet.next()) {
+            list = new ArrayList<>();
+
+
+            FieldBuilder builder = FieldBuilder.newBuilder();
+            builder.setName(fieldSet.getString("Field"));
+
+            String type = fieldSet.getString("Type");
+            int bIndex;
+            if ((bIndex = type.indexOf('(')) <= 0) {    // time|date|datetime|blob|text|
+                builder.setType(type);
+            } else {
+                if (type.charAt(type.length() - 1) == ')') {    //  bigint(20)|int(11)
+                    // float(11,2)|decimal(10,2)
+                    builder.setType(type.substring(0, bIndex));
+                    builder.setLength(type.substring(bIndex + 1, type.lastIndexOf(')')));
+                } else {    //  "bigint(20) unsigned zerofill"
+                    String[] aryTypeInfo = StringUtil.split(type, ' ');
+                    for (String info : aryTypeInfo) {
+                        switch (info) {
+                            case "unsigned":
+                                builder.setUnsigned(true);
+                                break;
+                            case "zerofill":
+                                builder.setZeroFill(true);
+                                break;
+                            default: {
+                                if (info.charAt(info.length() - 1) == ')') {
+                                    int eIndex = info.lastIndexOf(')');
+                                    builder.setType(info.substring(0, bIndex));
+                                    builder.setLength(info.substring(bIndex + 1, eIndex));
+                                } else {
+                                    builder.setType(info); // time|date|datetime|blob|text|
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+
+
+//            for (int i = 0; i < aryTypeInfo.length; i++) {
+//                if (i == 0) {
+//                    builder.setType(type.substring(0, startIndex));
+//                    builder.setLength(type.substring(startIndex + 1, endIndex));
+//                } else if (aryTypeInfo[i].equals("unsigned")) {
+//                    builder.setUnsigned(true);
+//                } else if (aryTypeInfo[i].equals("zerofill")) {
+//                    builder.setZeroFill(true);
+//                }
+//            }
+
+
+            Field field = new Field();
+            field.setName(fieldSet.getString("Field"));
+//            String type = fieldSet.getString("Type");
+            if (DataType.verify(type, DataType.Codes.DATE_TYPE)) {
+                field.setType(type);
+            } else {
+                int startIndex = type.indexOf("(");
+                int endIndex = type.indexOf(")");
+                if (endIndex == type.length() - 1) {
+                    field.setType(type.substring(0, startIndex));
+                    field.setLength(type.substring(startIndex + 1, endIndex));
+                } else {
+                    String[] split = type.split(" ");
+                    for (int i = 0; i < split.length; i++) {
+                        if (i == 0) {
+                            field.setType(type.substring(0, startIndex));
+                            field.setLength(type.substring(startIndex + 1, endIndex));
+                        } else if (split[i].equals("unsigned")) {
+                            field.setIsUnsigned(true);
+                        } else if (split[i].equals("zerofill")) {
+                            field.setIsZeroFill(true);
+                        }
+                    }
+                }
+            }
+            String collation = fieldSet.getString("Collation");
+            if (collation != null) {
+                field.setCollate(collation);
+            }
+            String Default = fieldSet.getString("Default");
+            if (Default != null) {
+                field.setDefaultValue(Default);
+            }
+            String Comment = fieldSet.getString("Comment");
+            if (Comment != null) {
+                field.setDesc(Comment);
+            }
+            boolean isNull = fieldSet.getBoolean("Null");
+            field.setIsNotNull(!isNull);
+            // TODO:索引 - 复杂部分暂时不处理, 只判断是否是主键索引
+            String key = fieldSet.getString("Key");
+            if (key.equals("PRI")) {
+                field.setIsPrimaryKey(true);
+            }
+            String extra = fieldSet.getString("Extra");
+            if (!StringUtil.isEmpty(extra)) {
+                if (extra.equals("auto_increment")) {
+                    field.setIsAutoIncrement(true);
+                }
+            }
+            list.add(field);
+        }
+        if (list != null && list.size() > 0) {
+            Field[] fields = new Field[list.size()];
+            list.toArray(fields);
+            return fields;
+        }
+        return null;
+    }
+
+    public static Field[] statFields(ResultSet fieldSet) throws SQLException {
+        List<Field> list = null;
+        while (fieldSet.next()) {
+            list = new ArrayList<>();
+            Field field = new Field();
+            field.setName(fieldSet.getString("Field"));
+            String type = fieldSet.getString("Type");
+            if (DataType.verify(type, DataType.Codes.DATE_TYPE)) {
+                field.setType(type);
+            } else {
+                int startIndex = type.indexOf("(");
+                int endIndex = type.indexOf(")");
+                if (endIndex == type.length() - 1) {
+                    field.setType(type.substring(0, startIndex));
+                    field.setLength(type.substring(startIndex + 1, endIndex));
+                } else {
+                    String[] split = type.split(" ");
+                    for (int i = 0; i < split.length; i++) {
+                        if (i == 0) {
+                            field.setType(type.substring(0, startIndex));
+                            field.setLength(type.substring(startIndex + 1, endIndex));
+                        } else if (split[i].equals("unsigned")) {
+                            field.setIsUnsigned(true);
+                        } else if (split[i].equals("zerofill")) {
+                            field.setIsZeroFill(true);
+                        }
+                    }
+                }
+            }
+            String collation = fieldSet.getString("Collation");
+            if (collation != null) {
+                field.setCollate(collation);
+            }
+            String Default = fieldSet.getString("Default");
+            if (Default != null) {
+                field.setDefaultValue(Default);
+            }
+            String Comment = fieldSet.getString("Comment");
+            if (Comment != null) {
+                field.setDesc(Comment);
+            }
+            boolean isNull = fieldSet.getBoolean("Null");
+            field.setIsNotNull(!isNull);
+            // TODO:索引 - 复杂部分暂时不处理, 只判断是否是主键索引
+            String key = fieldSet.getString("Key");
+            if (key.equals("PRI")) {
+                field.setIsPrimaryKey(true);
+            }
+            String extra = fieldSet.getString("Extra");
+            if (!StringUtil.isEmpty(extra)) {
+                if (extra.equals("auto_increment")) {
+                    field.setIsAutoIncrement(true);
+                }
+            }
+            list.add(field);
+        }
+        if (list != null && list.size() > 0) {
+            Field[] fields = new Field[list.size()];
+            list.toArray(fields);
+            return fields;
+        }
+        return null;
+    }
+
+    /**
      * @param table
      * @return
      */
@@ -115,11 +395,12 @@ public final class MySQL {
     /**
      * The table name.
      * <p>If the operation system is Linux/ CentOS 6.x. the mysql table name must be lower string</p>
-     *
+     * <p>
      * <pre>
      *     Example : `database`.`table_name`
      *     Example : `table_name`
      * </pre>
+     *
      * @param database  The database name
      * @param tableName The table name
      * @return Return the table name sql string

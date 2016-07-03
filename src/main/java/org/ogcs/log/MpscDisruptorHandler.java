@@ -43,13 +43,22 @@ public class MpscDisruptorHandler extends SimpleChannelInboundHandler<String>{
 
     protected Map<String/*Table.name*/, Queue<String[]>> queue;
 
+    private LogProcessor processor;
+    private char separator;
+
     public MpscDisruptorHandler() {
 
     }
 
+    public MpscDisruptorHandler(LogProcessor processor) {
+        this.separator = DEFAULT_SEPARATOR;
+        this.processor = processor;
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String msg) throws Exception {
-        String[] split = StringUtil.split(msg, DEFAULT_SEPARATOR);
+        String[] split = StringUtil.split(msg, separator);
+
         Table table = AoContext.INSTANCE.XML.getTable(split[0]);
         if (table == null) {
             LOG.error("Unknown table [ " + split[0] + " ], msg : " + msg);

@@ -18,8 +18,7 @@ package org.ogcs.log;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ogcs.log.parser.Table;
-import org.ogcs.log.util.MySQL;
+import org.ogcs.log.parser.Struct;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,18 +34,18 @@ public class LogRecordTask {
 
     private static final Logger LOG = LogManager.getLogger(LogRecordTask.class);
     private DataSource dataSource; // TODO: 改成数据源工具，可以按照策略选择数据源
-    private Table table;
+    private Struct struct;
     private List<String[]> list;
 
-    public LogRecordTask(DataSource dataSource, Table table, List<String[]> list) {
+    public LogRecordTask(DataSource dataSource, Struct struct, List<String[]> list) {
         this.dataSource = dataSource;
-        this.table = table;
+        this.struct = struct;
         this.list = list;
     }
 
     public void record() {
         if (dataSource == null) throw new NullPointerException("dataSource");
-        if (table == null) throw new NullPointerException("table");
+        if (struct == null) throw new NullPointerException("struct");
         if (list == null || list.isEmpty()) throw new IllegalStateException("list is Null or size is empty.");
 
         Connection con = null;
@@ -55,10 +54,11 @@ public class LogRecordTask {
             con = dataSource.getConnection();
             con.setAutoCommit(false);
 
-            String query = MySQL.prepareQuery(table);
+            String query = struct.getPrepareQuery();
             stat = con.prepareStatement(query);
             for (String[] params : list) {
-                for (int i = 1; i < params.length; i++) {
+                int len = Math.min(struct.getTable().getFields().length, params.length);
+                for (int i = 1; i < len; i++) {
                     stat.setObject(i, params[i]);
                 }
                 stat.addBatch();

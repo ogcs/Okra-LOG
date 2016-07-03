@@ -18,6 +18,7 @@ package org.ogcs.log.parser;
 
 import org.ogcs.log.exception.IllegalVersionException;
 import org.ogcs.log.util.MySQL;
+import org.ogcs.utilities.StringUtil;
 
 /**
  * 结构体. 用于保存Table的版本信息和预查询语句
@@ -53,6 +54,9 @@ public class Struct {
         }
         this.table = table;
         this.prepareQuery = MySQL.prepareQuery(table);
+        if (StringUtil.isEmpty(this.prepareQuery)) {
+            throw new IllegalStateException("prepareQuery is empty.");
+        }
         this.version = version;
 
 

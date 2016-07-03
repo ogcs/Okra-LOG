@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 
 /**
@@ -41,12 +43,14 @@ public class LogProcessor implements Runnable {
     protected Disruptor<AoEvent> disruptor;
     protected Queue<AoEvent> messageQueue;
 
-
+    protected Map<String/*Table.name*/, Queue<String[]>> map;
 
     public LogProcessor(Queue<AoEvent> messageQueue) {
         this(messageQueue, new Disruptor<>(
                 AoEvent.DEFAULT_EVENT_FACTORY, ringBufferSize, Executors.newCachedThreadPool(), ProducerType.SINGLE, new BlockingWaitStrategy()
         ), new AoEventHandler(), null);
+
+        map = new ConcurrentHashMap<>();
     }
 
     public LogProcessor(Queue<AoEvent> messageQueue, Disruptor<AoEvent> disruptor, EventHandler<AoEvent> handler, ExceptionHandler<AoEvent> exceptionHandler) {
@@ -61,6 +65,16 @@ public class LogProcessor implements Runnable {
         this.disruptor.handleEventsWith(handler);
         this.disruptor.handleExceptionsWith(exceptionHandler);
         this.disruptor.start();
+    }
+
+    public void add(String tableName, String[] params) {
+        Queue<String[]> queue = map.get(tableName);
+        if (queue == null) {
+            queue = new ConcurrentLinkedQueue<>();
+            map.put(tableName, queue);
+        }
+        queue.add(params);
+
     }
 
     @Override

@@ -23,7 +23,7 @@ package org.ogcs.log.parser;
  */
 public interface Builder<T> {
 
-    Builder newBuilder();
+//    Builder newBuilder();
 
     T build();
 }

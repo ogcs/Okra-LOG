@@ -17,10 +17,7 @@
 package org.ogcs.log.parser;
 
 
-import org.ogcs.log.mysql.DataType;
 import org.ogcs.utilities.StringUtil;
-
-import static org.ogcs.log.mysql.DataType.verify;
 
 /**
  * @author TinyZ
@@ -31,7 +28,7 @@ public final class FieldBuilder implements Builder<Field> {
 
     private String name;
     private String type;
-    private String length;
+    private String length;  //  special: float(11,2)|decimal(11,2)
     private String defaultValue;
     private boolean isPrimaryKey;
     private boolean isNotNull;
@@ -42,8 +39,11 @@ public final class FieldBuilder implements Builder<Field> {
     private String collate;
     private String desc;
 
-    @Override
-    public FieldBuilder newBuilder() {
+    private FieldBuilder() {
+        //no-op
+    }
+
+    public static FieldBuilder newBuilder() {
         return new FieldBuilder();
     }
 
@@ -51,33 +51,6 @@ public final class FieldBuilder implements Builder<Field> {
     public Field build() {
         if (StringUtil.isEmpty(name)) throw new NullPointerException("name");
         if (StringUtil.isEmpty(type)) throw new NullPointerException("type");
-
-
-
-
-        if (!StringUtil.isEmpty(length)) {
-            this.length = length;
-        }
-        if (!StringUtil.isEmpty(defaultValue)) {
-            this.defaultValue = defaultValue;
-        }
-        this.isPrimaryKey = isPrimaryKey;
-        this.isNotNull = isPrimaryKey || isNotNull;
-        if (verify(DataType.Codes.UNSIGNED)) {
-            this.isUnsigned = isUnsigned;
-        }
-        if (verify(DataType.Codes.AUTO_INCREMENT)) {
-            this.isAutoIncrement = isAutoIncrement;
-        }
-        if (!StringUtil.isEmpty(charset) && verify(DataType.Codes.HAS_CHARSET)) {
-            this.charset = charset;
-        }
-        if (!StringUtil.isEmpty(collate) && verify(DataType.Codes.HAS_COLLATE)) {
-            this.collate = collate;
-        }
-        if (!StringUtil.isEmpty(desc)) {
-            this.desc = desc;
-        }
 
         return new Field(name, type, length, defaultValue, isPrimaryKey, isNotNull, isUnsigned, isAutoIncrement, charset, collate, desc);
     }

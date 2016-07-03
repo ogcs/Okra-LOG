@@ -40,8 +40,18 @@ public class Table<F extends Field> {
     public Table() {
     }
 
-    public Table(String name, F[] fields) {
-        this(null, name, DEFAULT_DB_ENGINE, DEFAULT_CHARSET, DEFAULT_COLLATE, null, 0, fields);
+    /**
+     *
+     * @param name Database table's name.
+     * @param fields table's fields array.
+     * @param desc Database table's description.
+     */
+    public Table(String name, F[] fields, String desc) {
+        this(null, name, DEFAULT_DB_ENGINE, DEFAULT_CHARSET, DEFAULT_COLLATE, desc, 0, fields);
+    }
+
+    public Table(String database, String name, F[] fields, String desc) {
+        this(database, name, DEFAULT_DB_ENGINE, DEFAULT_CHARSET, DEFAULT_COLLATE, desc, 0, fields);
     }
 
     public Table(String database, String name, String dbEngine, String charset, String collate, String desc, int autoIncrement, F[] fields) {

@@ -16,22 +16,13 @@
 
 package org.ogcs.log;
 
-import io.netty.channel.ChannelHandler;
-import org.ogcs.netty.impl.TcpProtocolServer;
-
 /**
- * @author TinyZ.
- * @date 2016/6/23
+ * @author TinyZ
+ * @date 2016-07-03.
  */
-public class AoServer extends TcpProtocolServer{
+public class Bootstrap {
 
-    public AoServer(int port) {
-        super();
-        this.port = port;
-    }
+    public static void main(String[] args) {
 
-    @Override
-    protected ChannelHandler newChannelInitializer() {
-        return null;
     }
 }

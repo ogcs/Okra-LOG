@@ -26,15 +26,18 @@ public class TableBuilder<F extends Field> implements Builder<Table<F>> {
 
     private String database;
     private String name;
-    private String dbEngine;
+    private String engine;
     private String charset;
     private String collate;
     private String desc;
-    private int autoIncrement = 1;
+    private int incr;
     private F[] fields;
 
-    @Override
-    public TableBuilder newBuilder() {
+    private TableBuilder() {
+        //no-op
+    }
+
+    public static <T extends Field> TableBuilder<T> newBuilder() {
         return new TableBuilder<>();
     }
 
@@ -42,14 +45,14 @@ public class TableBuilder<F extends Field> implements Builder<Table<F>> {
     public Table<F> build() {
         if (name == null) throw new NullPointerException("name");
         if (fields == null || fields.length <= 0) throw new NullPointerException("fields");
-        if (StringUtil.isEmpty(dbEngine))
-            this.dbEngine = "InnoDB";
+        if (StringUtil.isEmpty(engine))
+            this.engine = "InnoDB";
         if (StringUtil.isEmpty(charset))
             this.charset = "utf8";
         if (StringUtil.isEmpty(collate))
             this.collate = "utf8_general_ci";
-        autoIncrement = autoIncrement < 0 ? 0 : autoIncrement;
-        return new Table<>(database, name, dbEngine, charset, collate, desc, autoIncrement, fields);
+        incr = incr < 0 ? 0 : incr;
+        return new Table<>(database, name, engine, charset, collate, desc, incr, fields);
     }
 
     public TableBuilder setDatabase(String database) {
@@ -62,8 +65,8 @@ public class TableBuilder<F extends Field> implements Builder<Table<F>> {
         return this;
     }
 
-    public TableBuilder setDbEngine(String dbEngine) {
-        this.dbEngine = dbEngine;
+    public TableBuilder setEngine(String engine) {
+        this.engine = engine;
         return this;
     }
 
@@ -82,8 +85,8 @@ public class TableBuilder<F extends Field> implements Builder<Table<F>> {
         return this;
     }
 
-    public TableBuilder setAutoIncrement(int autoIncrement) {
-        this.autoIncrement = autoIncrement;
+    public TableBuilder setIncr(int incr) {
+        this.incr = incr;
         return this;
     }
 

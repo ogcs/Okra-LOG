@@ -54,10 +54,10 @@ okra-log.xml文件的结构描述, 用于校验和检查相关字段
         <xsd:attribute name="version" type="xsd:double" use="required"/>
         <xsd:attribute name="name" type="StrName" use="required"/>
         <xsd:attribute name="database" type="StrName"/>
-        <xsd:attribute name="dbEngine" type="DBEngine"/>
+        <xsd:attribute name="engine" type="DBEngine"/>
         <xsd:attribute name="charset" type="StrName" default="utf8"/>
         <xsd:attribute name="collate" type="StrName" default="utf8_general_ci"/>
-        <xsd:attribute name="autoIncrement" type="xsd:int" default="1"/>
+        <xsd:attribute name="incr" type="xsd:int" default="1"/>
         <xsd:attribute name="desc" type="xsd:string"/>
     </xsd:attributeGroup>
 

@@ -36,7 +36,8 @@ public class LogRecordTaskTest {
             list.add(StringUtil.split(str, '|'));
         }
 
-        task = new LogRecordTask(dataSource, logMoney, list);
+//        task = new LogRecordTask(dataSource, logMoney, list);
+        task = new LogRecordTask(dataSource, null, list);
     }
 
     @Test
