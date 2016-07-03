@@ -90,57 +90,55 @@ public final class MySQL {
         List<Field> list = null;
         while (fieldSet.next()) {
             list = new ArrayList<>();
-            Field field = new Field();
-            field.setName(fieldSet.getString("Field"));
+            Field.Builder builder = new Field.Builder();
+            builder.name(fieldSet.getString("Field"));
             String type = fieldSet.getString("Type");
             if (DataType.verify(type, DataType.Codes.DATE_TYPE)) {
-                field.setType(type);
+                builder.type(type);
             } else {
                 int startIndex = type.indexOf("(");
                 int endIndex = type.indexOf(")");
                 if (endIndex == type.length() - 1) {
-                    field.setType(type.substring(0, startIndex));
-                    field.setLength(type.substring(startIndex + 1, endIndex));
+                    builder.type(type.substring(0, startIndex));
+                    builder.length(type.substring(startIndex + 1, endIndex));
                 } else {
                     String[] split = type.split(" ");
                     for (int i = 0; i < split.length; i++) {
                         if (i == 0) {
-                            field.setType(type.substring(0, startIndex));
-                            field.setLength(type.substring(startIndex + 1, endIndex));
+                            builder.type(type.substring(0, startIndex));
+                            builder.length(type.substring(startIndex + 1, endIndex));
                         } else if (split[i].equals("unsigned")) {
-                            field.setIsUnsigned(true);
+                            builder.isUnsigned(true);
                         } else if (split[i].equals("zerofill")) {
-                            field.setIsZeroFill(true);
+                            builder.isZeroFill(true);
                         }
                     }
                 }
             }
             String collation = fieldSet.getString("Collation");
             if (collation != null) {
-                field.setCollate(collation);
+                builder.collate(collation);
             }
             String Default = fieldSet.getString("Default");
             if (Default != null) {
-                field.setDefaultValue(Default);
+                builder.defaultValue(Default);
             }
             String Comment = fieldSet.getString("Comment");
             if (Comment != null) {
-                field.setDesc(Comment);
+                builder.desc(Comment);
             }
             boolean isNull = fieldSet.getBoolean("Null");
-            field.setIsNotNull(!isNull);
+            builder.isNotNull(!isNull);
             // TODO:索引 - 复杂部分暂时不处理, 只判断是否是主键索引
             String key = fieldSet.getString("Key");
             if (key.equals("PRI")) {
-                field.setIsPrimaryKey(true);
+                builder.isPrimaryKey(true);
             }
             String extra = fieldSet.getString("Extra");
-            if (!StringUtil.isEmpty(extra)) {
-                if (extra.equals("auto_increment")) {
-                    field.setIsAutoIncrement(true);
-                }
+            if (!StringUtil.isEmpty(extra) && extra.equals("auto_increment")) {
+                    builder.isAutoIncrement(true);
             }
-            list.add(field);
+            list.add(builder.build());
         }
         if (list != null && list.size() > 0) {
             Field[] fields = new Field[list.size()];
