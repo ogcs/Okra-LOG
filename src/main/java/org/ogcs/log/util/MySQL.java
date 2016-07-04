@@ -307,16 +307,16 @@ public final class MySQL {
         }
         StringBuilder builder = new StringBuilder();
         builder.append("CREATE TABLE IF NOT EXISTS `");
-        if (!StringUtil.isEmpty(table.getDatabase())) {
-            builder.append(table.getDatabase().toLowerCase()).append("`.`").append(table.getName().toLowerCase());
-        } else {
+        if (StringUtil.isEmpty(table.getDatabase())) {
             builder.append(table.getName().toLowerCase());
+        } else {
+            builder.append(table.getDatabase().toLowerCase()).append("`.`").append(table.getName().toLowerCase());
         }
         builder.append("` (\n");
         Field[] fields = table.getFields();
         StringBuilder priBuilder = null;
         for (int i = 0; i < fields.length; i++) {
-            sqlFieldCreate(builder, fields[i]);
+            fieldCreateSQL(builder, fields[i]);
             if (i != fields.length - 1) {
                 builder.append(", \n");
             }
@@ -331,69 +331,55 @@ public final class MySQL {
             priBuilder.delete(priBuilder.length() - 1, priBuilder.length()).insert(0, ", \n PRIMARY KEY (").append(")");
             builder.append(priBuilder);
         }
-        StringBuilder append = builder.append("\n)").append(sqlTableAttribute(table)).append(";");
+        StringBuilder append = builder.append("\n)").append(tableAttributeSQL(table)).append(";");
         return String.valueOf(append);
     }
 
-    public static StringBuilder sqlFieldCreate(StringBuilder builder, Field field) {
-        // Example: `xStr_2` VARCHAR(50) CHARSET gb2312 COLLATE gb2312_chinese_ci NULL
-        return sqlFieldBase(builder, field);
+    /**
+     *
+     * <pre>
+     *     Example: `xStr_2` VARCHAR(50) CHARSET gb2312 COLLATE gb2312_chinese_ci NULL
+     * </pre>
+     * @param builder
+     * @param field
+     * @return
+     */
+    public static StringBuilder fieldCreateSQL(StringBuilder builder, Field field) {
+        return fieldSQL(builder, field);
     }
 
-    public static String sqlFieldAddColumn(String lastColumnName, Field field) {
-        // Example : ADD COLUMN `xy1` INT(11) UNSIGNED NOT NULL  COMMENT 'ds' AFTER `xStr_2`,
+    /**
+     * <pre>
+     *     Example : ADD COLUMN `xy1` INT(11) UNSIGNED NOT NULL  COMMENT 'ds' AFTER `xStr_2`,
+     * </pre>
+     * @param lastColumnName
+     * @param field
+     * @return
+     */
+    public static String fieldAddColumnSQL(String lastColumnName, Field field) {
         StringBuilder builder = new StringBuilder();
         builder.append(" ADD COLUMN ");
-        sqlFieldBase(builder, field);
+        fieldSQL(builder, field);
         builder.append(" AFTER `").append(lastColumnName).append("`");
-        return String.valueOf(builder);
+        return builder.toString();
     }
 
     /**
      * Change field attribute
-     *
+     * <pre>
+     *     Example : CHANGE `xid` `xid1` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT '字段ID'
+     * </pre>
      * @param oldFieldName The old field name
      * @param field        {@link Field}
      * @return Return the change field SQL.
-     * Example : CHANGE `xid` `xid1` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT '字段ID'
      */
-    public static String sqlFieldChange(String oldFieldName, Field field) {
+    public static String fieldChangeSQL(String oldFieldName, Field field) {
         StringBuilder builder = new StringBuilder();
         builder.append(" CHANGE `").append(oldFieldName).append("` ");
-        return String.valueOf(sqlFieldBase(builder, field));
+        return fieldSQL(builder, field).toString();
     }
 
-    /**
-     * table attribute sql
-     *
-     * @param table {@link Table}
-     * @return return sql string
-     */
-    public static String sqlTableAttribute(Table table) {
-        StringBuilder builder = new StringBuilder();
-        if (!StringUtil.isEmpty(table.getDbEngine())) {
-            builder.append(" ENGINE=").append(table.getDbEngine());
-        }
-        if (!StringUtil.isEmpty(table.getCharset())) {
-            builder.append(" CHARSET=").append(table.getCharset());
-        }
-        if (!StringUtil.isEmpty(table.getCollate())) {
-            builder.append(" COLLATE=").append(table.getCollate());
-        }
-        if (table.getAutoIncrement() > 0) {
-            builder.append(" AUTO_INCREMENT=").append(String.valueOf(table.getAutoIncrement()));
-        }
-        if (!StringUtil.isEmpty(table.getDesc())) {
-            builder.append(" COMMENT='").append(table.getDesc()).append("'");
-        }
-        return String.valueOf(builder);
-    }
-
-    public static String sqlTableRename(String database, String oldTableName, String newTableName) {
-        return " RENAME TABLE " + org.ogcs.log.mysql.MySQL.tableName(database, oldTableName) + " TO " + org.ogcs.log.mysql.MySQL.tableName(database, newTableName);
-    }
-
-    public static StringBuilder sqlFieldBase(StringBuilder builder, Field field) {
+    public static StringBuilder fieldSQL(StringBuilder builder, Field field) {
         builder.append(" `").append(field.getName()).append("` ");
         builder.append(field.getType().toUpperCase());
         if (!StringUtil.isEmpty(field.getLength())) {
@@ -411,11 +397,7 @@ public final class MySQL {
         if (!StringUtil.isEmpty(field.getCollate()) && field.verify(DataType.Codes.HAS_COLLATE)) {
             builder.append(" COLLATE ").append(field.getCollate());
         }
-        if (field.isPrimaryKey() || field.isNotNull()) {
-            builder.append(" NOT NULL ");
-        } else {
-            builder.append(" NULL ");
-        }
+        builder.append((field.isPrimaryKey() || field.isNotNull()) ? " NOT NULL " : " NULL ");
         if (field.isAutoIncrement() && field.verify(DataType.Codes.AUTO_INCREMENT)) {
             builder.append(" AUTO_INCREMENT ");
         }
@@ -426,6 +408,36 @@ public final class MySQL {
             builder.append(" COMMENT '").append(field.getDesc()).append("'");
         }
         return builder;
+    }
+
+    /**
+     * table attribute sql
+     *
+     * @param table {@link Table}
+     * @return return sql string
+     */
+    public static String tableAttributeSQL(Table table) {
+        StringBuilder builder = new StringBuilder();
+        if (!StringUtil.isEmpty(table.getDbEngine())) {
+            builder.append(" ENGINE=").append(table.getDbEngine());
+        }
+        if (!StringUtil.isEmpty(table.getCharset())) {
+            builder.append(" CHARSET=").append(table.getCharset());
+        }
+        if (!StringUtil.isEmpty(table.getCollate())) {
+            builder.append(" COLLATE=").append(table.getCollate());
+        }
+        if (table.getAutoIncrement() > 0) {
+            builder.append(" AUTO_INCREMENT=").append(String.valueOf(table.getAutoIncrement()));
+        }
+        if (!StringUtil.isEmpty(table.getDesc())) {
+            builder.append(" COMMENT='").append(table.getDesc()).append("'");
+        }
+        return builder.toString();
+    }
+
+    public static String renameTableSQL(String database, String oldTableName, String newTableName) {
+        return " RENAME TABLE " + org.ogcs.log.mysql.MySQL.tableName(database, oldTableName) + " TO " + org.ogcs.log.mysql.MySQL.tableName(database, newTableName);
     }
 
     /**

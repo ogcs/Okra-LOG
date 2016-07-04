@@ -47,7 +47,10 @@ public class LogProcessor implements Runnable {
 
     public LogProcessor(Queue<AoEvent> messageQueue) {
         this(messageQueue, new Disruptor<>(
-                AoEvent.DEFAULT_EVENT_FACTORY, ringBufferSize, Executors.newCachedThreadPool(), ProducerType.SINGLE, new BlockingWaitStrategy()
+                AoEvent.DEFAULT_EVENT_FACTORY, ringBufferSize,
+                Executors.newFixedThreadPool(20),
+                ProducerType.SINGLE,
+                new BlockingWaitStrategy()
         ), new AoEventHandler(), null);
 
         map = new ConcurrentHashMap<>();
