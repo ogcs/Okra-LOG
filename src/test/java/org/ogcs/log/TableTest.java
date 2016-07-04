@@ -44,6 +44,8 @@ public class TableTest {
             System.out.println();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

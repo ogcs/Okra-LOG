@@ -77,6 +77,14 @@ public class LogProcessor implements Runnable {
 
     }
 
+    public void record(String tableName, int limit) {
+
+    }
+
+    public void recordAll() {
+
+    }
+
     @Override
     public void run() {
         while (true) {
@@ -84,9 +92,6 @@ public class LogProcessor implements Runnable {
 
 
                 List<String[]> list = new ArrayList<>();
-
-
-
 
 
                 if (!messageQueue.isEmpty()) {

@@ -83,6 +83,7 @@ public class Field {
      */
     private String desc;
 
+    @Deprecated
     public Field() {
     }
 

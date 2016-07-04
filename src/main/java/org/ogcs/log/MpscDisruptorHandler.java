@@ -43,6 +43,9 @@ public class MpscDisruptorHandler extends SimpleChannelInboundHandler<String>{
 
     protected Map<String/*Table.name*/, Queue<String[]>> queue;
 
+
+    protected Map<String/*Table.name*/, LogProcessor> queue2;
+
     private LogProcessor processor;
     private char separator;
 
@@ -70,6 +73,9 @@ public class MpscDisruptorHandler extends SimpleChannelInboundHandler<String>{
             queue.put(split[0], msgQueue);
         }
         msgQueue.add(split); // 重新拷贝一份
+
+
+        
 
 
         messageQueue.add(split);
