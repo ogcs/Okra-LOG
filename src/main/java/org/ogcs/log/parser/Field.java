@@ -16,9 +16,8 @@
 
 package org.ogcs.log.parser;
 
-import org.ogcs.utilities.StringUtil;
-
 import org.ogcs.log.mysql.DataType;
+import org.ogcs.utilities.StringUtil;
 
 /**
  * MySQL table's field bean.
@@ -30,27 +29,58 @@ import org.ogcs.log.mysql.DataType;
 public class Field {
 
     /**
-     * 字段名
+     * Field' name
      */
     private String name;
     /**
-     * 数据类型
+     * Data type.
      */
     private String type;
-    private String length;
+    /**
+     * Data length info.
+     * <p>
+     * Notice: float(11,2)|decimal(11,2)
+     */
+    private String length;  //  special: float(11,2)|decimal(11,2)
+    /**
+     * Default data value.
+     */
     private String defaultValue;
+    /**
+     * The field is primary key.
+     */
     private boolean isPrimaryKey;
+    /**
+     * Is the fields 's value allow null.
+     */
     private boolean isNotNull;
+    /**
+     * Is the fields 's value unsigned.  Only numeric.
+     */
     private boolean isUnsigned;
+    /**
+     * Is auto increment
+     */
     private boolean isAutoIncrement;
     /**
-     * 是否用0补齐
+     * is Zero fill.
+     * <p>
+     * 使用之后数据库值被默认为Unsigned并且用0补齐数据位数   示例: 1(4) => 0001   215(7) => 0000215
      *
-     * @deprecated 不推荐使用, 使用之后数据库值被默认为Unsigned并且用0补齐数据位数   示例: 1(4) => 0001   215(7) => 0000215
+     * @deprecated 不推荐使用,
      */
     private boolean isZeroFill;
+    /**
+     * charset. Only string.
+     */
     private String charset;
+    /**
+     * string collate. Only string.
+     */
     private String collate;
+    /**
+     * The comment of field.
+     */
     private String desc;
 
     public Field() {

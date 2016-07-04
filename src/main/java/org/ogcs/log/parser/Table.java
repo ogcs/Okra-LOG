@@ -16,16 +16,16 @@
 
 package org.ogcs.log.parser;
 
+import static org.ogcs.log.parser.TableBuilder.DEFAULT_CHARSET;
+import static org.ogcs.log.parser.TableBuilder.DEFAULT_COLLATE;
+import static org.ogcs.log.parser.TableBuilder.DEFAULT_DB_ENGINE;
+
 /**
  * MySQL table bean.
  *
  * @since 1.0
  */
 public class Table<F extends Field> {
-
-    private static final String DEFAULT_DB_ENGINE = "InnoDB";
-    private static final String DEFAULT_CHARSET = "utf8";
-    private static final String DEFAULT_COLLATE = "utf8_general_ci";
 
     private String database;
     private String name;

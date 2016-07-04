@@ -44,10 +44,8 @@ public final class MySQL {
         //no-op
     }
 
-    public static Table<Field> newTable(DataSource dataSource, String database, String tableName) throws SQLException {
-        if (dataSource == null) throw new NullPointerException("dataSource");
+    public static Table<Field> newTable(Connection con, String database, String tableName) throws SQLException {
         if (tableName == null) throw new NullPointerException("tableName");
-        Connection con = dataSource.getConnection();
         Statement stat = con.createStatement();
         stat.execute(showTableStatusSQL(database, tableName));
         ResultSet resultSet = stat.getResultSet();
@@ -125,28 +123,24 @@ public final class MySQL {
         return table;
     }
 
+    //  Example :
     //  Field|Type|Collation|Null|Key|Default|Extra|Privileges|Comment
     //  uid|int(10) unsigned|(Null)|NO|PRI|auto_increment|select,insert,update,references|
     //  onlyId|int(11)|(Null)|NO||(Null)||select,insert,update,references|
     //  name|varchar(20)|utf8_general_ci|NO||(Null)|select,insert,update,references|
 
 
-    public static Field[] statFields1(ResultSet fieldSet) throws SQLException {
-        List<Field> list = null;
+    public static Field[] statFields(ResultSet fieldSet) throws SQLException {
+        List<Field> list = new ArrayList<>();
         while (fieldSet.next()) {
-            list = new ArrayList<>();
-
-
             FieldBuilder builder = FieldBuilder.newBuilder();
             builder.setName(fieldSet.getString("Field"));
-
             String type = fieldSet.getString("Type");
             int bIndex;
-            if ((bIndex = type.indexOf('(')) <= 0) {    // time|date|datetime|blob|text|
+            if ((bIndex = type.indexOf('(')) <= 0) {    // time|date|datetime|blob|text|float
                 builder.setType(type);
             } else {
-                if (type.charAt(type.length() - 1) == ')') {    //  bigint(20)|int(11)
-                    // float(11,2)|decimal(10,2)
+                if (type.charAt(type.length() - 1) == ')') {    //  bigint(20)|int(11)  float(11,2)|decimal(10,2)
                     builder.setType(type.substring(0, bIndex));
                     builder.setLength(type.substring(bIndex + 1, type.lastIndexOf(')')));
                 } else {    //  "bigint(20) unsigned zerofill"
@@ -173,76 +167,35 @@ public final class MySQL {
                     }
                 }
             }
-
-
-
-
-
-//            for (int i = 0; i < aryTypeInfo.length; i++) {
-//                if (i == 0) {
-//                    builder.setType(type.substring(0, startIndex));
-//                    builder.setLength(type.substring(startIndex + 1, endIndex));
-//                } else if (aryTypeInfo[i].equals("unsigned")) {
-//                    builder.setUnsigned(true);
-//                } else if (aryTypeInfo[i].equals("zerofill")) {
-//                    builder.setZeroFill(true);
-//                }
-//            }
-
-
-            Field field = new Field();
-            field.setName(fieldSet.getString("Field"));
-//            String type = fieldSet.getString("Type");
-            if (DataType.verify(type, DataType.Codes.DATE_TYPE)) {
-                field.setType(type);
-            } else {
-                int startIndex = type.indexOf("(");
-                int endIndex = type.indexOf(")");
-                if (endIndex == type.length() - 1) {
-                    field.setType(type.substring(0, startIndex));
-                    field.setLength(type.substring(startIndex + 1, endIndex));
-                } else {
-                    String[] split = type.split(" ");
-                    for (int i = 0; i < split.length; i++) {
-                        if (i == 0) {
-                            field.setType(type.substring(0, startIndex));
-                            field.setLength(type.substring(startIndex + 1, endIndex));
-                        } else if (split[i].equals("unsigned")) {
-                            field.setIsUnsigned(true);
-                        } else if (split[i].equals("zerofill")) {
-                            field.setIsZeroFill(true);
-                        }
-                    }
-                }
-            }
             String collation = fieldSet.getString("Collation");
             if (collation != null) {
-                field.setCollate(collation);
+                builder.setCollate(collation);
             }
+            //  没有default : text
             String Default = fieldSet.getString("Default");
             if (Default != null) {
-                field.setDefaultValue(Default);
+                builder.setDefaultValue(Default);
             }
             String Comment = fieldSet.getString("Comment");
             if (Comment != null) {
-                field.setDesc(Comment);
+                builder.setDesc(Comment);
             }
             boolean isNull = fieldSet.getBoolean("Null");
-            field.setIsNotNull(!isNull);
+            builder.setNotNull(!isNull);
             // TODO:索引 - 复杂部分暂时不处理, 只判断是否是主键索引
             String key = fieldSet.getString("Key");
             if (key.equals("PRI")) {
-                field.setIsPrimaryKey(true);
+                builder.setPrimaryKey(true);
             }
             String extra = fieldSet.getString("Extra");
             if (!StringUtil.isEmpty(extra)) {
                 if (extra.equals("auto_increment")) {
-                    field.setIsAutoIncrement(true);
+                    builder.setAutoIncrement(true);
                 }
             }
-            list.add(field);
+            list.add(builder.build());
         }
-        if (list != null && list.size() > 0) {
+        if (list.size() > 0) {
             Field[] fields = new Field[list.size()];
             list.toArray(fields);
             return fields;
@@ -250,7 +203,7 @@ public final class MySQL {
         return null;
     }
 
-    public static Field[] statFields(ResultSet fieldSet) throws SQLException {
+    public static Field[] statFields1(ResultSet fieldSet) throws SQLException {
         List<Field> list = null;
         while (fieldSet.next()) {
             list = new ArrayList<>();
@@ -421,9 +374,9 @@ public final class MySQL {
      */
     public static String showTableStatusSQL(String database, String tableName) {
         if (StringUtil.isEmpty(database)) {
-            return StringUtil.concatenate("SHOW TABLE STATUS FROM `", database, "` LIKE '", tableName, "';");
-        } else {
             return StringUtil.concatenate("SHOW TABLE STATUS LIKE '", tableName, "';");
+        } else {
+            return StringUtil.concatenate("SHOW TABLE STATUS FROM `", database, "` LIKE '", tableName, "';");
         }
     }
 

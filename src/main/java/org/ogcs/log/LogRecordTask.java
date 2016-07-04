@@ -57,7 +57,7 @@ public class LogRecordTask {
             String query = struct.getPrepareQuery();
             stat = con.prepareStatement(query);
             for (String[] params : list) {
-                int len = Math.min(struct.getTable().getFields().length, params.length);
+                int len = Math.min(struct.getTable().getFields().length, params.length); // TODO: 当params少的时候，是否会出现问题？
                 for (int i = 1; i < len; i++) {
                     stat.setObject(i, params[i]);
                 }

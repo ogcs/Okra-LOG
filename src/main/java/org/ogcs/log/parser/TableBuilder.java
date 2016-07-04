@@ -19,10 +19,16 @@ package org.ogcs.log.parser;
 import org.ogcs.utilities.StringUtil;
 
 /**
+ * The database {@link Table}'s builder
+ *
  * @author TinyZ
- * @date 2016-06-29.
+ * @since 1.0.
  */
 public class TableBuilder<F extends Field> implements Builder<Table<F>> {
+
+    public static final String DEFAULT_DB_ENGINE = "InnoDB";
+    public static final String DEFAULT_CHARSET = "utf8";
+    public static final String DEFAULT_COLLATE = "utf8_general_ci";
 
     private String database;
     private String name;
@@ -46,11 +52,11 @@ public class TableBuilder<F extends Field> implements Builder<Table<F>> {
         if (name == null) throw new NullPointerException("name");
         if (fields == null || fields.length <= 0) throw new NullPointerException("fields");
         if (StringUtil.isEmpty(engine))
-            this.engine = "InnoDB";
+            this.engine = DEFAULT_DB_ENGINE;
         if (StringUtil.isEmpty(charset))
-            this.charset = "utf8";
+            this.charset = DEFAULT_CHARSET;
         if (StringUtil.isEmpty(collate))
-            this.collate = "utf8_general_ci";
+            this.collate = DEFAULT_COLLATE;
         incr = incr < 0 ? 0 : incr;
         return new Table<>(database, name, engine, charset, collate, desc, incr, fields);
     }

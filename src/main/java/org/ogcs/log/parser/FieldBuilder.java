@@ -16,19 +16,19 @@
 
 package org.ogcs.log.parser;
 
-
 import org.ogcs.utilities.StringUtil;
 
 /**
+ * The {@link Field} builder.
+ *
  * @author TinyZ
- * @date 2016-06-27.
  * @since 1.0
  */
 public final class FieldBuilder implements Builder<Field> {
 
     private String name;
     private String type;
-    private String length;  //  special: float(11,2)|decimal(11,2)
+    private String length;
     private String defaultValue;
     private boolean isPrimaryKey;
     private boolean isNotNull;
