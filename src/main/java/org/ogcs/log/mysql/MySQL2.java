@@ -624,10 +624,10 @@ public final class MySQL2 {
     }
 
     /**
-     *
      * <pre>
      *     Example: `xStr_2` VARCHAR(50) CHARSET gb2312 COLLATE gb2312_chinese_ci NULL
      * </pre>
+     *
      * @param field
      * @return
      */

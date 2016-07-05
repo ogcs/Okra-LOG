@@ -52,7 +52,7 @@ public final class MySQL {
     /**
      * Get Table from database
      *
-     * @param con The {@link Connection}
+     * @param con       The {@link Connection}
      * @param database  The database name
      * @param tableName The table name
      * @return Return {@link Table} instance is the table exist, null otherwise.
@@ -336,10 +336,10 @@ public final class MySQL {
     }
 
     /**
-     *
      * <pre>
      *     Example: `xStr_2` VARCHAR(50) CHARSET gb2312 COLLATE gb2312_chinese_ci NULL
      * </pre>
+     *
      * @param builder
      * @param field
      * @return
@@ -352,6 +352,7 @@ public final class MySQL {
      * <pre>
      *     Example : ADD COLUMN `xy1` INT(11) UNSIGNED NOT NULL  COMMENT 'ds' AFTER `xStr_2`,
      * </pre>
+     *
      * @param lastColumnName
      * @param field
      * @return
@@ -369,6 +370,7 @@ public final class MySQL {
      * <pre>
      *     Example : CHANGE `xid` `xid1` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT '字段ID'
      * </pre>
+     *
      * @param oldFieldName The old field name
      * @param field        {@link Field}
      * @return Return the change field SQL.

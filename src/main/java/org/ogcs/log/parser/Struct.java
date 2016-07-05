@@ -22,6 +22,7 @@ import org.ogcs.utilities.StringUtil;
 
 /**
  * 结构体. 用于保存Table的版本信息和预查询语句
+ *
  * @author TinyZ
  * @date 2016-07-01.
  */

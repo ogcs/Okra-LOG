@@ -16,9 +16,7 @@
 
 package org.ogcs.log.parser;
 
-import static org.ogcs.log.parser.TableBuilder.DEFAULT_CHARSET;
-import static org.ogcs.log.parser.TableBuilder.DEFAULT_COLLATE;
-import static org.ogcs.log.parser.TableBuilder.DEFAULT_DB_ENGINE;
+import static org.ogcs.log.parser.TableBuilder.*;
 
 /**
  * MySQL table bean.
@@ -41,10 +39,9 @@ public class Table<F extends Field> {
     }
 
     /**
-     *
-     * @param name Database table's name.
+     * @param name   Database table's name.
      * @param fields table's fields array.
-     * @param desc Database table's description.
+     * @param desc   Database table's description.
      */
     public Table(String name, F[] fields, String desc) {
         this(null, name, DEFAULT_DB_ENGINE, DEFAULT_CHARSET, DEFAULT_COLLATE, desc, 0, fields);

@@ -54,9 +54,6 @@ public class AoEventHandler implements EventHandler<AoEvent> {
                         stat.setString(0, "");
 
 
-
-
-
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -67,7 +64,6 @@ public class AoEventHandler implements EventHandler<AoEvent> {
                 event.setValues(null, null);
             }
         }
-
 
 
         if (event != null) {

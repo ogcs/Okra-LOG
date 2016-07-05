@@ -17,7 +17,6 @@
 package org.ogcs.log.mysql;
 
 /**
- *
  * Mapping MySQL Data Types in Java.
  * (http://dev.mysql.com/doc/connector-j/5.1/en/connector-j-reference-type-conversions.html)
  *
@@ -53,7 +52,6 @@ public enum MDT {
     MEDIUMTEXT,
     LONGBLOB,
     LONGTEXT;
-
 
 
 }
