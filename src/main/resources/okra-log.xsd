@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-okra-log.xml文件的结构描述, 用于校验和检查相关字段
-@author TinyZ
-@date 20160624
--->
+  ~     Copyright 2016-2026 TinyZ
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:okra-log="http://tinyzzh.github.io/schema/okra-log"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
@@ -57,7 +67,7 @@ okra-log.xml文件的结构描述, 用于校验和检查相关字段
         <xsd:attribute name="engine" type="DBEngine"/>
         <xsd:attribute name="charset" type="StrName" default="utf8"/>
         <xsd:attribute name="collate" type="StrName" default="utf8_general_ci"/>
-        <xsd:attribute name="incr" type="xsd:int" default="1"/>
+        <xsd:attribute name="incr" type="xsd:int" default="0"/>
         <xsd:attribute name="desc" type="xsd:string"/>
     </xsd:attributeGroup>
 
@@ -67,7 +77,7 @@ okra-log.xml文件的结构描述, 用于校验和检查相关字段
         </xsd:annotation>
         <xsd:attribute name="name" type="StrName" use="required"/>
         <xsd:attribute name="type" type="DataType" use="required"/>
-        <xsd:attribute name="length" type="xsd:int"/>
+        <xsd:attribute name="length" type="xsd:string"/>
         <xsd:attribute name="defaultValue" type="xsd:string"/>
         <xsd:attribute name="isPrimaryKey" type="xsd:boolean" default="false"/>
         <xsd:attribute name="isNotNull" type="xsd:boolean" default="false"/>
