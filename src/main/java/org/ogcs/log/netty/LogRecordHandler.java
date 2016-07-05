@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package org.ogcs.log;
+package org.ogcs.log.netty;
 
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.socket.DatagramPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ogcs.log.AoContext;
+import org.ogcs.log.LogProcessor;
 import org.ogcs.log.parser.Table;
 import org.ogcs.utilities.StringUtil;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -33,11 +37,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @date 2016/6/24.
  */
 @Sharable
-public class MpscDisruptorHandler extends SimpleChannelInboundHandler<String>{
+public class LogRecordHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
-    private static final Logger LOG = LogManager.getLogger(MpscDisruptorHandler.class);
+    private static final Logger LOG = LogManager.getLogger(LogRecordHandler.class);
 
-    public static final char DEFAULT_SEPARATOR  = '|';
+    public static final char DEFAULT_SEPARATOR = '|';
 
     protected static final Queue<String[]> messageQueue = new ConcurrentLinkedQueue<>();
 
@@ -49,17 +53,19 @@ public class MpscDisruptorHandler extends SimpleChannelInboundHandler<String>{
     private LogProcessor processor;
     private char separator;
 
-    public MpscDisruptorHandler() {
+    public LogRecordHandler() {
 
     }
 
-    public MpscDisruptorHandler(LogProcessor processor) {
+    public LogRecordHandler(LogProcessor processor) {
         this.separator = DEFAULT_SEPARATOR;
         this.processor = processor;
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, String msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket dp) throws Exception {
+        String msg = dp.content().toString(Charset.forName("UTF-8"));
+
         String[] split = StringUtil.split(msg, separator);
 
         Table table = AoContext.INSTANCE.XML.getTable(split[0]);
@@ -75,15 +81,8 @@ public class MpscDisruptorHandler extends SimpleChannelInboundHandler<String>{
         msgQueue.add(split); // 重新拷贝一份
 
 
-        
-
-
         messageQueue.add(split);
-
-
-
     }
-
 
 
 }
