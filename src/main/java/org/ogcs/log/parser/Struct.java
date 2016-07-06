@@ -16,9 +16,17 @@
 
 package org.ogcs.log.parser;
 
+import org.ogcs.log.LogRecordTask;
+import org.ogcs.log.NoticeBoard;
 import org.ogcs.log.exception.IllegalVersionException;
 import org.ogcs.log.util.MySQL;
 import org.ogcs.utilities.StringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 结构体. 用于保存Table的版本信息和预查询语句
@@ -41,6 +49,19 @@ public class Struct {
      */
     private long version;
 
+    private AtomicLong logsSize = new AtomicLong(0);
+
+    private NoticeBoard board;
+
+    private Queue<String[]> logs;
+
+    private int limit;
+
+    public Struct() {
+        this.limit = 100;
+        this.logs = new ConcurrentLinkedQueue<>();
+    }
+
     /**
      * Update struct
      *
@@ -59,8 +80,43 @@ public class Struct {
             throw new IllegalStateException("prepareQuery is empty.");
         }
         this.version = version;
+    }
 
+    public void add(String[] params) {
+        logs.add(params);
+        long count = logsSize.incrementAndGet();
+        if (count >= limit) {
+            record(limit);
+        }
+    }
 
+    public void record(int limit) {
+        List<String[]> list = new ArrayList<>();
+        while (list.size() < limit) {
+            String[] poll = logs.poll();
+            if (poll == null) {
+                break;
+            }
+            list.add(poll);
+        }
+        if (!list.isEmpty()) {
+            // TODO: 提交落地任务
+            LogRecordTask task = new LogRecordTask(null, this, list);
+
+        }
+    }
+
+    public void recordAll() {
+        List<String[]> list = new ArrayList<>();
+        String[] params;
+        while ((params = logs.poll()) != null) {
+            list.add(params);
+        }
+        if (!list.isEmpty()) {
+            // TODO: 提交落地任务
+            LogRecordTask task = new LogRecordTask(null, this, list);
+
+        }
     }
 
     public Table getTable() {

@@ -20,7 +20,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ogcs.log.parser.Struct;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -32,32 +31,29 @@ import java.util.List;
  * @author TinyZ.
  * @date 2016-06-25.
  */
-public class LogRecordTask {
+public final class LogRecordTask {
 
     private static final Logger LOG = LogManager.getLogger(LogRecordTask.class);
-    private DataSource dataSource; // TODO: 改成数据源工具，可以按照策略选择数据源
+    private Connection connection;
     private Struct struct;
     private List<String[]> list;
 
-    public LogRecordTask(DataSource dataSource, Struct struct, List<String[]> list) {
-        this.dataSource = dataSource;
+    public LogRecordTask(Connection connection, Struct struct, List<String[]> list) {
+        this.connection = connection;
         this.struct = struct;
         this.list = list;
     }
 
     public void record() {
-        if (dataSource == null) throw new NullPointerException("dataSource");
+        if (connection == null) throw new NullPointerException("connection");
         if (struct == null) throw new NullPointerException("struct");
         if (list == null || list.isEmpty()) throw new IllegalStateException("list is Null or size is empty.");
 
-        Connection con = null;
         PreparedStatement stat = null;
         try {
-            con = dataSource.getConnection();
-            con.setAutoCommit(false);
-
+            connection.setAutoCommit(false);
             String query = struct.getPrepareQuery();
-            stat = con.prepareStatement(query);
+            stat = connection.prepareStatement(query);
             for (String[] params : list) {
                 int len = Math.min(struct.getTable().getFields().length, params.length); // TODO: 当params少的时候，是否会出现问题？
                 for (int i = 1; i < len; i++) {
@@ -68,8 +64,10 @@ public class LogRecordTask {
             stat.executeBatch();
         } catch (SQLException e) {
             try {
-                if (con != null) {
-                    con.rollback();
+                connection.rollback();
+
+                for (String[] params : list) {
+                    struct.add(params);
                 }
             } catch (SQLException e1) {
                 LOG.warn("Query rollback error.", e);
@@ -82,10 +80,8 @@ public class LogRecordTask {
                 if (stat != null) {
                     stat.close();
                 }
-                if (con != null) {
-                    con.setAutoCommit(true);
-                    con.close();
-                }
+                connection.setAutoCommit(true);
+                connection.close();
             } catch (SQLException e) {
                 LOG.error("Database connection close error.", e);
             }

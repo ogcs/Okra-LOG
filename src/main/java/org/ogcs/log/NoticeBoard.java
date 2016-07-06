@@ -18,27 +18,28 @@ package org.ogcs.log;
 
 import org.ogcs.log.parser.Struct;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author TinyZ
- * @date 2016/6/24.
+ * @date 2016-07-06.
  */
-public class LogProcessor {
+public class NoticeBoard {
 
-    private AtomicLong logsSize = new AtomicLong(0);
-    private Struct struct;
-    protected Queue<String[]> logs;
-    private int limit;
+    private Map<String, Struct> board;
 
-    public LogProcessor(Struct struct) {
-        this.struct = struct;
-        this.logs = new ConcurrentLinkedQueue<>();
+    public NoticeBoard() {
+        this.board = new ConcurrentHashMap<>();
     }
 
+    public void add(String tableName, String[] params) {
+        Struct processor = board.get(tableName);
+        if (processor == null) {
+            processor = new Struct();
+            board.put(tableName, processor);
+        }
+        processor.add(params);
+    }
 
 }

@@ -79,8 +79,5 @@ public class MpscDisruptorHandler extends SimpleChannelInboundHandler<String> {
 
         messageQueue.add(split);
 
-
     }
-
-
 }

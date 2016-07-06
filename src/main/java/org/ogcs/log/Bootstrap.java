@@ -16,6 +16,17 @@
 
 package org.ogcs.log;
 
+import com.lmax.disruptor.BlockingWaitStrategy;
+import com.lmax.disruptor.EventFactory;
+import com.lmax.disruptor.WorkHandler;
+import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.dsl.ProducerType;
+import org.ogcs.log.disruptor.AoEvent;
+import org.ogcs.log.disruptor.AoEventHandler;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 /**
  * @author TinyZ
  * @date 2016-07-03.
@@ -23,6 +34,25 @@ package org.ogcs.log;
 public class Bootstrap {
 
     public static void main(String[] args) {
+
+
+        Disruptor<AoEvent> disruptor = new Disruptor<AoEvent>(
+                new EventFactory<AoEvent>() {
+                    @Override
+                    public AoEvent newInstance() {
+                        return new AoEvent();
+                    }
+                }
+        , 1024, Executors.newFixedThreadPool(20), ProducerType.MULTI, new BlockingWaitStrategy());
+//        disruptor.handleEventsWith(new AoEventHandler());
+        disruptor.handleEventsWithWorkerPool(new WorkHandler<AoEvent>() {
+            @Override
+            public void onEvent(AoEvent event) throws Exception {
+
+            }
+        });
+
+
 
     }
 }

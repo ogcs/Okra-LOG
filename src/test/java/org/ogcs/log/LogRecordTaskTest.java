@@ -37,7 +37,7 @@ public class LogRecordTaskTest {
         }
 
 //        task = new LogRecordTask(dataSource, logMoney, list);
-        task = new LogRecordTask(dataSource, null, list);
+        task = new LogRecordTask(noticeBoard, dataSource, null, list);
     }
 
     @Test
