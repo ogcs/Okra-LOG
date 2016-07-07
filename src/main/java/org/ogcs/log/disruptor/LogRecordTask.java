@@ -53,13 +53,13 @@ public final class LogRecordTask implements Releasable {
             conn.setAutoCommit(false);
             String query = struct.getPrepareQuery();
             stat = conn.prepareStatement(query);
-            int filedSize = struct.getTable().getFields().length  + 1; // 从1开始计数
+            int filedSize = struct.getTable().getFields().length + 1; // 从1开始计数
             for (String[] params : list) {
                 for (int i = 1; i < params.length; i++) {
                     stat.setObject(i, params[i]);
                 }
                 if (filedSize > params.length) { // 补全SQL中缺少的参数为null  // TODO: 当params少的时候，是否会出现问题？
-                    for (int j = params.length; j < filedSize ; j++) {
+                    for (int j = params.length; j < filedSize; j++) {
                         stat.setObject(j, null);
                     }
                 }

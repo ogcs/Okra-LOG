@@ -27,9 +27,9 @@ public class OkraConfig {
      */
     private int port;
     private String hikariCPConfigPath;
-    private String databaseUrl;
-    private String databaseUsername;
-    private String databasePassword;
+    private String dbJdbcUrl;
+    private String dbUsername;
+    private String dbPassword;
     /**
      * The log struct file path.
      */
@@ -47,12 +47,12 @@ public class OkraConfig {
      */
     private int ringBufferSize;
 
-    public OkraConfig(int port, String hikariCPConfigPath, String databaseUrl, String databaseUsername, String databasePassword, int ringBufferSize, String xsdPath, String logPath, char logSeparator) {
+    public OkraConfig(int port, String hikariCPConfigPath, String dbJdbcUrl, String dbUsername, String dbPassword, int ringBufferSize, String xsdPath, String logPath, char logSeparator) {
         this.port = port;
         this.hikariCPConfigPath = hikariCPConfigPath;
-        this.databaseUrl = databaseUrl;
-        this.databaseUsername = databaseUsername;
-        this.databasePassword = databasePassword;
+        this.dbJdbcUrl = dbJdbcUrl;
+        this.dbUsername = dbUsername;
+        this.dbPassword = dbPassword;
         this.ringBufferSize = ringBufferSize;
         this.xsdPath = xsdPath;
         this.logPath = logPath;
@@ -75,28 +75,28 @@ public class OkraConfig {
         this.hikariCPConfigPath = hikariCPConfigPath;
     }
 
-    public String getDatabaseUrl() {
-        return databaseUrl;
+    public String getDbJdbcUrl() {
+        return dbJdbcUrl;
     }
 
-    public void setDatabaseUrl(String databaseUrl) {
-        this.databaseUrl = databaseUrl;
+    public void setDbJdbcUrl(String dbJdbcUrl) {
+        this.dbJdbcUrl = dbJdbcUrl;
     }
 
-    public String getDatabaseUsername() {
-        return databaseUsername;
+    public String getDbUsername() {
+        return dbUsername;
     }
 
-    public void setDatabaseUsername(String databaseUsername) {
-        this.databaseUsername = databaseUsername;
+    public void setDbUsername(String dbUsername) {
+        this.dbUsername = dbUsername;
     }
 
-    public String getDatabasePassword() {
-        return databasePassword;
+    public String getDbPassword() {
+        return dbPassword;
     }
 
-    public void setDatabasePassword(String databasePassword) {
-        this.databasePassword = databasePassword;
+    public void setDbPassword(String dbPassword) {
+        this.dbPassword = dbPassword;
     }
 
     public int getRingBufferSize() {

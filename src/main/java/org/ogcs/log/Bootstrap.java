@@ -16,17 +16,9 @@
 
 package org.ogcs.log;
 
-import com.lmax.disruptor.BlockingWaitStrategy;
-import com.lmax.disruptor.EventFactory;
-import com.lmax.disruptor.WorkHandler;
-import com.lmax.disruptor.dsl.Disruptor;
-import com.lmax.disruptor.dsl.ProducerType;
 import org.ogcs.log.config.OkraConfig;
 import org.ogcs.log.config.OkraProperties;
-import org.ogcs.log.disruptor.OkraLogRecordEvent;
 import org.ogcs.log.netty.OkraLogServer;
-
-import java.util.concurrent.Executors;
 
 /**
  * @author TinyZ
@@ -59,7 +51,6 @@ public class Bootstrap {
 //
 //            }
 //        });
-
 
 
     }

@@ -17,7 +17,6 @@
 package org.ogcs.log;
 
 import org.ogcs.log.disruptor.LogRecordTask;
-import org.ogcs.log.exception.IllegalVersionException;
 import org.ogcs.log.parser.Table;
 import org.ogcs.log.util.MySQL;
 import org.ogcs.utilities.StringUtil;
@@ -73,7 +72,7 @@ public class Struct {
     /**
      * Update struct
      *
-     * @param table   MySQL table.
+     * @param table MySQL table.
      */
     public synchronized void update(Table table) {
         if (table == null) throw new NullPointerException("table");

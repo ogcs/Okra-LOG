@@ -16,14 +16,13 @@
 
 package org.ogcs.log.netty;
 
-import io.netty.channel.*;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.DatagramChannel;
-import io.netty.channel.socket.DatagramPacket;
 import org.ogcs.log.MissionBoard;
 import org.ogcs.log.config.OkraConfig;
 import org.ogcs.netty.impl.UdpProtocol;
-
-import java.nio.charset.Charset;
 
 /**
  * @author TinyZ
@@ -56,20 +55,6 @@ public class OkraLogServer extends UdpProtocol {
                 cp.addLast("handler", new LogRecordHandler(config, board));
                 //
 //                cp.addLast("handler", new MpscDisruptorHandler());
-                //   Example : echo test
-//                cp.addLast("handler", new SimpleChannelInboundHandler<DatagramPacket>() {
-//                    @Override
-//                    protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket dp) throws Exception {
-//                        String msg = dp.content().toString(Charset.forName("UTF-8"));
-//                        System.out.println("Received : " + msg);
-//
-//                    }
-//
-//                    @Override
-//                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-//                        super.exceptionCaught(ctx, cause);
-//                    }
-//                });
             }
         };
     }

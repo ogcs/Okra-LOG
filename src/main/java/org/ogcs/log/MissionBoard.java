@@ -25,7 +25,6 @@ import org.ogcs.log.config.OkraConfig;
 import org.ogcs.log.disruptor.LogRecordTask;
 import org.ogcs.log.disruptor.OkraLogRecordEvent;
 import org.ogcs.log.disruptor.OkraLogRecordEventHandler;
-import org.ogcs.log.parser.Field;
 import org.ogcs.log.parser.StructParser;
 import org.ogcs.log.parser.Table;
 import org.ogcs.log.parser.W3cDomParser;
@@ -122,7 +121,7 @@ public class MissionBoard {
 
     public Connection getConnection() throws SQLException {
         if (dataSource == null) {
-            return DriverManager.getConnection(config.getDatabaseUrl(), config.getDatabaseUsername(), config.getDatabasePassword());
+            return DriverManager.getConnection(config.getDbJdbcUrl(), config.getDbUsername(), config.getDbPassword());
         }
         return dataSource.getConnection();
     }
