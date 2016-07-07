@@ -19,70 +19,40 @@ package org.ogcs.log.netty;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.socket.DatagramPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ogcs.log.AoContext;
-import org.ogcs.log.LogProcessor;
+import org.ogcs.log.MissionBoard;
+import org.ogcs.log.config.OkraConfig;
 import org.ogcs.log.parser.Table;
 import org.ogcs.utilities.StringUtil;
-
-import java.nio.charset.Charset;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author TinyZ
  * @date 2016/6/24.
  */
 @Sharable
-public class LogRecordHandler extends SimpleChannelInboundHandler<DatagramPacket> {
+public class LogRecordHandler extends SimpleChannelInboundHandler<String> {
 
     private static final Logger LOG = LogManager.getLogger(LogRecordHandler.class);
 
-    public static final char DEFAULT_SEPARATOR = '|';
-
-    protected static final Queue<String[]> messageQueue = new ConcurrentLinkedQueue<>();
-
-    protected Map<String/*Table.name*/, Queue<String[]>> queue;
-
-
-    protected Map<String/*Table.name*/, LogProcessor> queue2;
-
-    private LogProcessor processor;
+    private MissionBoard missions;
     private char separator;
 
-    public LogRecordHandler() {
-
-    }
-
-    public LogRecordHandler(LogProcessor processor) {
-        this.separator = DEFAULT_SEPARATOR;
-        this.processor = processor;
+    public LogRecordHandler(OkraConfig config, MissionBoard missions) {
+        this.separator = config.getLogSeparator();
+        this.missions = missions;
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket dp) throws Exception {
-        String msg = dp.content().toString(Charset.forName("UTF-8"));
-
+    protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+        if (LOG.isInfoEnabled())
+            LOG.info("Report Log : " + msg);
         String[] split = StringUtil.split(msg, separator);
-
-        Table table = AoContext.INSTANCE.XML.getTable(split[0]);
+        Table table = missions.getParser().getTable(split[0]);
         if (table == null) {
             LOG.error("Unknown table [ " + split[0] + " ], msg : " + msg);
             return;
         }
-        Queue<String[]> msgQueue = queue.get(split[0]);
-        if (msgQueue == null) {
-            msgQueue = new ConcurrentLinkedQueue<>();
-            queue.put(split[0], msgQueue);
-        }
-        msgQueue.add(split); // 重新拷贝一份
-
-
-        messageQueue.add(split);
+        missions.add(split[0], split);
     }
-
-
 }

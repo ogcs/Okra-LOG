@@ -19,6 +19,8 @@ package org.ogcs.log.netty;
 import io.netty.channel.*;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
+import org.ogcs.log.MissionBoard;
+import org.ogcs.log.config.OkraConfig;
 import org.ogcs.netty.impl.UdpProtocol;
 
 import java.nio.charset.Charset;
@@ -29,10 +31,14 @@ import java.nio.charset.Charset;
  */
 public class OkraLogServer extends UdpProtocol {
 
+    private OkraConfig config;
+    private MissionBoard board;
     private IpFilter ipFilter;
 
-    public OkraLogServer(int port) {
-        super(port);
+    public OkraLogServer(OkraConfig config, MissionBoard board) {
+        super(config.getPort());
+        this.config = config;
+        this.board = board;
     }
 
     public OkraLogServer(int port, IpFilter ipFilter) {
@@ -47,21 +53,23 @@ public class OkraLogServer extends UdpProtocol {
             protected void initChannel(DatagramChannel ch) throws Exception {
                 ChannelPipeline cp = ch.pipeline();
                 cp.addLast("ipFilter", new IpFilterHandler(ipFilter));
-                cp.addLast("handler", new MpscDisruptorHandler());
-
-                cp.addLast("handler", new SimpleChannelInboundHandler<DatagramPacket>() {
-                    @Override
-                    protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket dp) throws Exception {
-                        String msg = dp.content().toString(Charset.forName("UTF-8"));
-                        System.out.println("Received : " + msg);
-
-                    }
-
-                    @Override
-                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-                        super.exceptionCaught(ctx, cause);
-                    }
-                });
+                cp.addLast("handler", new LogRecordHandler(config, board));
+                //
+//                cp.addLast("handler", new MpscDisruptorHandler());
+                //   Example : echo test
+//                cp.addLast("handler", new SimpleChannelInboundHandler<DatagramPacket>() {
+//                    @Override
+//                    protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket dp) throws Exception {
+//                        String msg = dp.content().toString(Charset.forName("UTF-8"));
+//                        System.out.println("Received : " + msg);
+//
+//                    }
+//
+//                    @Override
+//                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+//                        super.exceptionCaught(ctx, cause);
+//                    }
+//                });
             }
         };
     }

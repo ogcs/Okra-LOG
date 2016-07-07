@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.parser;
+package org.ogcs.log;
 
-import org.ogcs.log.LogRecordTask;
-import org.ogcs.log.NoticeBoard;
+import org.ogcs.log.disruptor.LogRecordTask;
 import org.ogcs.log.exception.IllegalVersionException;
+import org.ogcs.log.parser.Table;
 import org.ogcs.log.util.MySQL;
 import org.ogcs.utilities.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 结构体. 用于保存Table的版本信息和预查询语句
+ * 结构体. 处理Table的版本信息和预查询语句
  *
  * @author TinyZ
  * @date 2016-07-01.
@@ -45,46 +46,69 @@ public class Struct {
      */
     private String prepareQuery;
     /**
-     * The table's version. use to check and update table
+     * The mission board.
      */
-    private long version;
-
-    private AtomicLong logsSize = new AtomicLong(0);
-
-    private NoticeBoard board;
-
+    private MissionBoard board;
+    /**
+     * 日志队列
+     */
     private Queue<String[]> logs;
 
     private int limit;
+    private AtomicLong logsSize = new AtomicLong(0);
 
-    public Struct() {
-        this.limit = 100;
+    public Struct(Table table, MissionBoard board) {
+        if (table == null) throw new NullPointerException("table");
+        if (board == null) throw new NullPointerException("board");
+        this.board = board;
+        this.table = table;
+        this.prepareQuery = MySQL.prepareQuery(table);
+        if (StringUtil.isEmpty(this.prepareQuery)) {
+            throw new IllegalStateException("prepareQuery is empty.");
+        }
         this.logs = new ConcurrentLinkedQueue<>();
+        this.limit = 100;
     }
 
     /**
      * Update struct
      *
      * @param table   MySQL table.
-     * @param version The struct's version.
-     * @throws IllegalVersionException
      */
-    public synchronized void update(Table table, long version) throws IllegalVersionException {
+    public synchronized void update(Table table) {
         if (table == null) throw new NullPointerException("table");
-        if (version <= 0 || version <= this.version) {
-            throw new IllegalVersionException("Current version : " + this.version + ", Target : " + version);
-        }
         this.table = table;
         this.prepareQuery = MySQL.prepareQuery(table);
         if (StringUtil.isEmpty(this.prepareQuery)) {
             throw new IllegalStateException("prepareQuery is empty.");
         }
-        this.version = version;
     }
 
     public void add(String[] params) {
         logs.add(params);
         long count = logsSize.incrementAndGet();
+        if (count >= limit) {
+            record(limit);
+        }
+    }
+
+    public void addAll(Collection<String[]> params) {
+        long count = 0;
+        for (String[] param : params) {
+            logs.add(param);
+            count = logsSize.incrementAndGet();
+        }
+        if (count >= limit) {
+            record(limit);
+        }
+    }
+
+    public void addAll(String[]... params) {
+        long count = 0;
+        for (String[] param : params) {
+            logs.add(param);
+            count = logsSize.incrementAndGet();
+        }
         if (count >= limit) {
             record(limit);
         }
@@ -98,11 +122,10 @@ public class Struct {
                 break;
             }
             list.add(poll);
+            logsSize.decrementAndGet();
         }
         if (!list.isEmpty()) {
-            // TODO: 提交落地任务
-            LogRecordTask task = new LogRecordTask(null, this, list);
-
+            board.publish(new LogRecordTask(this, list));
         }
     }
 
@@ -113,9 +136,7 @@ public class Struct {
             list.add(params);
         }
         if (!list.isEmpty()) {
-            // TODO: 提交落地任务
-            LogRecordTask task = new LogRecordTask(null, this, list);
-
+            board.publish(new LogRecordTask(this, list));
         }
     }
 
@@ -135,11 +156,19 @@ public class Struct {
         this.prepareQuery = prepareQuery;
     }
 
-    public long getVersion() {
-        return version;
+    public MissionBoard getBoard() {
+        return board;
     }
 
-    public void setVersion(long version) {
-        this.version = version;
+    public void setBoard(MissionBoard board) {
+        this.board = board;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
 }

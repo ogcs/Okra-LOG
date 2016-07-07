@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="OUT">
+            <PatternLayout pattern="[%d]-[%t]-[%c{1}-%line]-[%p] - %m%n "/>
+        </Console>
+        <RollingRandomAccessFile name="RRAF" fileName="logs/app.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout>
+                <!--  [日期]-[] -->
+                <Pattern>[%d]-[%c{1}-%line]-[%t]-[%p] - %m%n </Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="1 kb"/>
+            </Policies>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <AsyncRoot level="ERROR">
+            <AppenderRef ref="OUT"/>
+            <AppenderRef ref="RRAF"/>
+        </AsyncRoot>
+        <AsyncLogger name="org.ogcs.log" level="INFO" includeLocation="true">
+            <AppenderRef ref="OUT"/>
+            <AppenderRef ref="RRAF"/>
+        </AsyncLogger>
+    </Loggers>
+</Configuration>

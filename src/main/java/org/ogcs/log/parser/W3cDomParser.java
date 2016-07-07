@@ -56,10 +56,6 @@ public final class W3cDomParser implements StructParser<Table> {
         this.tables = new HashMap<>();
     }
 
-    //    public Map<String, Table> interpretXml() {
-//        return interpretXml(EosProperties.SERVER_EOS_FILE_PATH);
-//    }
-
     public Map<String, Table> interpretXml(String filePath) {
         this.path = filePath;
         return interpretXml(filePath, Table.class, Field.class);
@@ -182,7 +178,7 @@ public final class W3cDomParser implements StructParser<Table> {
 
     @Override
     public Map<String, Table> load(String filePath) {
-        if (XmlUtil.validateXml(filePath)) {
+        if (!XmlUtil.validateXml(filePath)) {
             throw new IllegalStateException("XSD file is wrong");
         }
         final Map<String, Table> data = interpretXml(filePath);

@@ -53,10 +53,10 @@ public final class XmlUtil {
      * @return Return true if the xml is right.
      */
     public static boolean validateXml(String xmlPath) {
-        String property = System.getProperty("log.xsd.path", filePath);
+        String property = System.getProperty("okra.log.xsd.path", filePath);
         try {
-            String path = XmlUtil.class.getResource(property).toURI().toString();
-            return validateXml(path, xmlPath);
+            // XmlUtil.class
+            return validateXml(new File(XmlUtil.class.getResource(property).toURI()), xmlPath);
         } catch (URISyntaxException e) {
             LOG.warn("Load *.xsd file failure : " + property, e);
         }
@@ -72,12 +72,31 @@ public final class XmlUtil {
      */
     public static boolean validateXml(String xsdPath, String xmlPath) {
         SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        File schemaFile = new File(xsdPath);
         Schema schema;
         try {
-            schema = schemaFactory.newSchema(schemaFile);
+            schema = schemaFactory.newSchema(new File(xsdPath));
         } catch (SAXException e) {
             LOG.warn("The XSD file not found in path : " + xsdPath, e);
+            return false;
+        }
+        Validator validator = schema.newValidator();
+        Source source = new StreamSource(xmlPath);
+        try {
+            validator.validate(source);
+        } catch (Exception ex) {
+            LOG.warn("The XML file is invalid in path : " + xmlPath, ex);
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean validateXml(File xsd, String xmlPath) {
+        SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+        Schema schema;
+        try {
+            schema = schemaFactory.newSchema(xsd);
+        } catch (SAXException e) {
+            LOG.warn("The XSD file not found in path : " + xsd.getPath(), e);
             return false;
         }
         Validator validator = schema.newValidator();

@@ -14,32 +14,30 @@
  * limitations under the License.
  */
 
-package org.ogcs.log;
+package org.ogcs.log.disruptor;
 
-import org.ogcs.log.parser.Struct;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.lmax.disruptor.EventFactory;
 
 /**
  * @author TinyZ
- * @date 2016-07-06.
+ * @date 2016/6/24.
  */
-public class NoticeBoard {
+public class OkraLogRecordEvent {
 
-    private Map<String, Struct> board;
+    private LogRecordTask task;
 
-    public NoticeBoard() {
-        this.board = new ConcurrentHashMap<>();
+    public void setValues(LogRecordTask task) {
+        this.task = task;
     }
 
-    public void add(String tableName, String[] params) {
-        Struct processor = board.get(tableName);
-        if (processor == null) {
-            processor = new Struct();
-            board.put(tableName, processor);
+    public LogRecordTask task() {
+        return task;
+    }
+
+    public static final EventFactory<OkraLogRecordEvent> DEF_EVENT_FACTORY = new EventFactory<OkraLogRecordEvent>() {
+        @Override
+        public OkraLogRecordEvent newInstance() {
+            return new OkraLogRecordEvent();
         }
-        processor.add(params);
-    }
-
+    };
 }

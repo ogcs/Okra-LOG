@@ -31,20 +31,28 @@ import java.nio.charset.Charset;
 public class LogRevTest {
 
     public static void main(String[] args) throws IOException {
-        OkraLogServer server = new OkraLogServer(9005);
-        server.start();
-        server.udpChannel();
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        OkraLogServer server = new OkraLogServer(9005, null);
+//        server.start();
+//        server.udpChannel();
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         DatagramSocket socket = new DatagramSocket(0);
-        String log = "MyLogData!";
+
+        String log = "log_money|2016-06-24|openid|0|105|15|100|1000";
         DatagramPacket dp = new DatagramPacket(log.getBytes(Charset.forName("UTF-8")), 0, log.length(), InetAddress.getByName("127.0.0.1"), 9005);
-        socket.send(dp);
+
+        for (int i = 0; i < 10; i++) {
+            socket.send(dp);
+            try {
+                Thread.sleep((int)(Math.random() * 10));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 //    @Before

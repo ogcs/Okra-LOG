@@ -21,10 +21,11 @@ import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.WorkHandler;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
-import org.ogcs.log.disruptor.AoEvent;
-import org.ogcs.log.disruptor.AoEventHandler;
+import org.ogcs.log.config.OkraConfig;
+import org.ogcs.log.config.OkraProperties;
+import org.ogcs.log.disruptor.OkraLogRecordEvent;
+import org.ogcs.log.netty.OkraLogServer;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
@@ -36,21 +37,28 @@ public class Bootstrap {
     public static void main(String[] args) {
 
 
-        Disruptor<AoEvent> disruptor = new Disruptor<AoEvent>(
-                new EventFactory<AoEvent>() {
-                    @Override
-                    public AoEvent newInstance() {
-                        return new AoEvent();
-                    }
-                }
-        , 1024, Executors.newFixedThreadPool(20), ProducerType.MULTI, new BlockingWaitStrategy());
-//        disruptor.handleEventsWith(new AoEventHandler());
-        disruptor.handleEventsWithWorkerPool(new WorkHandler<AoEvent>() {
-            @Override
-            public void onEvent(AoEvent event) throws Exception {
+        OkraConfig config = OkraProperties.getConfig();
+        MissionBoard missionBoard = new MissionBoard(config);
 
-            }
-        });
+        OkraLogServer server = new OkraLogServer(config, missionBoard);
+        server.start();
+
+
+//        Disruptor<OkraLogRecordEvent> disruptor = new Disruptor<OkraLogRecordEvent>(
+//                new EventFactory<OkraLogRecordEvent>() {
+//                    @Override
+//                    public OkraLogRecordEvent newInstance() {
+//                        return new OkraLogRecordEvent();
+//                    }
+//                }
+//        , 1024, Executors.newFixedThreadPool(20), ProducerType.MULTI, new BlockingWaitStrategy());
+////        disruptor.handleEventsWith(new OkraLogRecordEventHandler());
+//        disruptor.handleEventsWithWorkerPool(new WorkHandler<OkraLogRecordEvent>() {
+//            @Override
+//            public void onEvent(OkraLogRecordEvent event) throws Exception {
+//
+//            }
+//        });
 
 
 

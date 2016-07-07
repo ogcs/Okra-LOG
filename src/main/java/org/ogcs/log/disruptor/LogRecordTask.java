@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.ogcs.log;
+package org.ogcs.log.disruptor;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ogcs.log.parser.Struct;
+import org.ogcs.app.Releasable;
+import org.ogcs.log.Struct;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,44 +32,49 @@ import java.util.List;
  * @author TinyZ.
  * @date 2016-06-25.
  */
-public final class LogRecordTask {
+public final class LogRecordTask implements Releasable {
 
     private static final Logger LOG = LogManager.getLogger(LogRecordTask.class);
-    private Connection connection;
     private Struct struct;
     private List<String[]> list;
 
-    public LogRecordTask(Connection connection, Struct struct, List<String[]> list) {
-        this.connection = connection;
+    public LogRecordTask(Struct struct, List<String[]> list) {
         this.struct = struct;
         this.list = list;
     }
 
     public void record() {
-        if (connection == null) throw new NullPointerException("connection");
         if (struct == null) throw new NullPointerException("struct");
         if (list == null || list.isEmpty()) throw new IllegalStateException("list is Null or size is empty.");
-
+        Connection conn = null;
         PreparedStatement stat = null;
         try {
-            connection.setAutoCommit(false);
+            conn = struct.getBoard().getConnection();
+            conn.setAutoCommit(false);
             String query = struct.getPrepareQuery();
-            stat = connection.prepareStatement(query);
+            stat = conn.prepareStatement(query);
+            int filedSize = struct.getTable().getFields().length  + 1; // 从1开始计数
             for (String[] params : list) {
-                int len = Math.min(struct.getTable().getFields().length, params.length); // TODO: 当params少的时候，是否会出现问题？
-                for (int i = 1; i < len; i++) {
+                for (int i = 1; i < params.length; i++) {
                     stat.setObject(i, params[i]);
                 }
+                if (filedSize > params.length) { // 补全SQL中缺少的参数为null  // TODO: 当params少的时候，是否会出现问题？
+                    for (int j = params.length; j < filedSize ; j++) {
+                        stat.setObject(j, null);
+                    }
+                }
+//                int len = Math.min(struct.getTable().getFields().length, params.length);
+//                for (int i = 1; i < len; i++) {
+//                    stat.setObject(i, params[i]);
+//                }
                 stat.addBatch();
             }
             stat.executeBatch();
         } catch (SQLException e) {
             try {
-                connection.rollback();
-
-                for (String[] params : list) {
-                    struct.add(params);
-                }
+                if (conn != null)
+                    conn.rollback();
+                struct.addAll(list);
             } catch (SQLException e1) {
                 LOG.warn("Query rollback error.", e);
             }
@@ -80,11 +86,23 @@ public final class LogRecordTask {
                 if (stat != null) {
                     stat.close();
                 }
-                connection.setAutoCommit(true);
-                connection.close();
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
             } catch (SQLException e) {
                 LOG.error("Database connection close error.", e);
             }
+            release();
+        }
+    }
+
+    @Override
+    public void release() {
+        struct = null;
+        if (list != null) {
+            list.clear();
+            list = null;
         }
     }
 }

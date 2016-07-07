@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-<okra-log xmlns="http://tinyzzh.github.io/schema/okra-log">
+<okra-log xmlns="http://tinyzzh.github.io/schema/okra-log" version="1.0">
 
-    <table version="1.0" name="log_money" desc="货币变更日志表">
+    <table name="log_money" desc="货币变更日志表">
         <field name="logDate" type="DATETIME" desc="格式 YYYY-MM-DD HH:MM:SS"/>
         <field name="openId" type="VARCHAR" length="50" isPrimaryKey="true"/>
 
@@ -12,7 +12,7 @@
         <field name="afterValue" type="INT" desc="变更之后"/>
     </table>
 
-    <table version="1.0" name="log_level" desc="等级变更日志表">
+    <table name="log_level" desc="等级变更日志表">
         <field name="logDate" type="DATETIME" desc="格式 YYYY-MM-DD HH:MM:SS"/>
         <field name="openId" type="VARCHAR" length="50" isPrimaryKey="true"/>
 
@@ -24,7 +24,7 @@
         <field name="afterExp" type="INT" desc="变更之后经验值"/>
     </table>
 
-    <table version="1.0" name="log_item" desc="道具日志表">
+    <table name="log_item" desc="道具日志表">
         <field name="logDate" type="DATETIME" desc="格式 YYYY-MM-DD HH:MM:SS"/>
         <field name="openId" type="VARCHAR" length="50" isPrimaryKey="true"/>
 
@@ -36,7 +36,7 @@
         <field name="leftCount" type="INT" desc="变更之后道具数量"/>
     </table>
 
-    <table version="1.0" name="log_hero" desc="英雄日志表">
+    <table name="log_hero" desc="英雄日志表">
         <field name="logDate" type="DATETIME" desc="格式 YYYY-MM-DD HH:MM:SS"/>
         <field name="openId" type="VARCHAR" length="50" isPrimaryKey="true"/>
 
@@ -47,7 +47,6 @@
         <field name="value" type="INT" desc="道具变动数量"/>
         <field name="leftCount" type="INT" desc="变更之后道具数量"/>
     </table>
-
 
 </okra-log>
 

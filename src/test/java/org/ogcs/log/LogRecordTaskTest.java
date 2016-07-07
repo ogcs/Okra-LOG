@@ -3,10 +3,12 @@ package org.ogcs.log;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.Test;
+import org.ogcs.log.disruptor.LogRecordTask;
 import org.ogcs.log.parser.Table;
 import org.ogcs.log.parser.W3cDomParser;
 import org.ogcs.utilities.StringUtil;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +39,7 @@ public class LogRecordTaskTest {
         }
 
 //        task = new LogRecordTask(dataSource, logMoney, list);
-        task = new LogRecordTask(noticeBoard, dataSource, null, list);
+        task = new LogRecordTask(null, list);
     }
 
     @Test
