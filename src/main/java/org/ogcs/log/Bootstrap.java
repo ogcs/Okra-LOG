@@ -16,6 +16,8 @@
 
 package org.ogcs.log;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ogcs.log.config.OkraConfig;
 import org.ogcs.log.config.OkraProperties;
 import org.ogcs.log.netty.OkraLogServer;
@@ -26,32 +28,15 @@ import org.ogcs.log.netty.OkraLogServer;
  */
 public class Bootstrap {
 
+    public static final Logger LOG = LogManager.getLogger(Bootstrap.class);
+
     public static void main(String[] args) {
-
-
+        LOG.info("Bootstrap Okra-LOG ...");
         OkraConfig config = OkraProperties.getConfig();
         MissionBoard missionBoard = new MissionBoard(config);
 
         OkraLogServer server = new OkraLogServer(config, missionBoard);
         server.start();
-
-
-//        Disruptor<OkraLogRecordEvent> disruptor = new Disruptor<OkraLogRecordEvent>(
-//                new EventFactory<OkraLogRecordEvent>() {
-//                    @Override
-//                    public OkraLogRecordEvent newInstance() {
-//                        return new OkraLogRecordEvent();
-//                    }
-//                }
-//        , 1024, Executors.newFixedThreadPool(20), ProducerType.MULTI, new BlockingWaitStrategy());
-////        disruptor.handleEventsWith(new OkraLogRecordEventHandler());
-//        disruptor.handleEventsWithWorkerPool(new WorkHandler<OkraLogRecordEvent>() {
-//            @Override
-//            public void onEvent(OkraLogRecordEvent event) throws Exception {
-//
-//            }
-//        });
-
-
+        LOG.info("Okra-LOG bootstrap success.");
     }
 }

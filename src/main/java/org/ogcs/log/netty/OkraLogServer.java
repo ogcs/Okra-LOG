@@ -25,7 +25,8 @@ import org.ogcs.log.config.OkraConfig;
 import org.ogcs.netty.impl.UdpProtocol;
 
 /**
- * @author TinyZ
+ * Okra-LOG server.
+ * @author TinyZ.
  * @date 2016-07-05.
  */
 public class OkraLogServer extends UdpProtocol {
@@ -40,9 +41,11 @@ public class OkraLogServer extends UdpProtocol {
         this.board = board;
     }
 
-    public OkraLogServer(int port, IpFilter ipFilter) {
-        super(port);
-        this.ipFilter = ipFilter;
+    public OkraLogServer(OkraConfig config, MissionBoard board, IpFilter filter) {
+        super(config.getPort());
+        this.config = config;
+        this.board = board;
+        this.ipFilter = filter;
     }
 
     @Override
@@ -53,8 +56,6 @@ public class OkraLogServer extends UdpProtocol {
                 ChannelPipeline cp = ch.pipeline();
                 cp.addLast("ipFilter", new IpFilterHandler(ipFilter));
                 cp.addLast("handler", new LogRecordHandler(config, board));
-                //
-//                cp.addLast("handler", new MpscDisruptorHandler());
             }
         };
     }

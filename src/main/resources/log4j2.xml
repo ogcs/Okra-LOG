@@ -10,8 +10,10 @@
                 <Pattern>[%d]-[%c{1}-%line]-[%t]-[%p] - %m%n </Pattern>
             </PatternLayout>
             <Policies>
+                <!-- 根据filePattern中的最小单位(日期-天)为最小单位划分文件 -->
                 <TimeBasedTriggeringPolicy/>
-                <SizeBasedTriggeringPolicy size="1 kb"/>
+                <!-- 不适用按数据大小划分文件 -->
+                <!--<SizeBasedTriggeringPolicy size="1 kb"/>-->
             </Policies>
         </RollingRandomAccessFile>
     </Appenders>
@@ -21,7 +23,6 @@
             <AppenderRef ref="RRAF"/>
         </AsyncRoot>
         <AsyncLogger name="org.ogcs.log" level="INFO" includeLocation="true">
-            <AppenderRef ref="OUT"/>
             <AppenderRef ref="RRAF"/>
         </AsyncLogger>
     </Loggers>

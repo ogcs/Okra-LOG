@@ -29,9 +29,9 @@ import java.util.Properties;
  */
 public final class OkraProperties {
 
-    public static final Logger LOG = LogManager.getLogger(OkraProperties.class);
-
-    public static final String DEFAULT_CONFIG_PATH = "./conf/config.properties";
+    private static final Logger LOG = LogManager.getLogger(OkraProperties.class);
+    private static final String DEFAULT_CONFIG_PATH = "./conf/config.properties";
+    private static OkraConfig okraConfig;
 
     public static int LOG_PORT = 9005;
     public static String LOG_PATH = "./conf/aolog.xml";
@@ -42,7 +42,6 @@ public final class OkraProperties {
     public static String DATABASE_USER = "";
     public static String DATABASE_PSW = "";
     public static String HIKARI_CONFIG_PATH = "./conf/hikari.properties";
-
 
     static {
         load();
@@ -73,6 +72,9 @@ public final class OkraProperties {
     }
 
     public static OkraConfig getConfig() {
+        if (okraConfig != null) {
+            return okraConfig;
+        }
         return new OkraConfig(LOG_PORT, HIKARI_CONFIG_PATH, DATABASE_JDBC_URL, DATABASE_USER, DATABASE_PSW, LOG_RING_BUFFER_SIZE, LOG_XSD_PATH, LOG_PATH, LOG_SEPARATOR);
     }
 }
