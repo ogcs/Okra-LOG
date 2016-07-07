@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * 对象数组转成字符串数组的几种方式对比
+ *
  * @author TinyZ
  * @date 2016/6/24.
  */

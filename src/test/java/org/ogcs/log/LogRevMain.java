@@ -16,8 +16,6 @@
 
 package org.ogcs.log;
 
-import org.ogcs.log.netty.OkraLogServer;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -28,9 +26,10 @@ import java.nio.charset.Charset;
  * @author TinyZ
  * @date 2016-07-05.
  */
-public class LogRevTest {
+public class LogRevMain {
 
     public static void main(String[] args) throws IOException {
+        // 启动测试服务器
 //        OkraLogServer server = new OkraLogServer(9005, null);
 //        server.start();
 //        server.udpChannel();
@@ -40,6 +39,7 @@ public class LogRevTest {
 //            e.printStackTrace();
 //        }
 
+        // 发送测试数据
         DatagramSocket socket = new DatagramSocket(0);
 
         String log = "log_money|2016-06-24|openid|0|105|15|100|1000";
@@ -48,33 +48,10 @@ public class LogRevTest {
         for (int i = 0; i < 10; i++) {
             socket.send(dp);
             try {
-                Thread.sleep((int)(Math.random() * 10));
+                Thread.sleep((int) (Math.random() * 10));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
-
-//    @Before
-//    public void bootstrapServer() {
-//        OkraLogServer server = new OkraLogServer(9005);
-//        server.start();
-//        server.udpChannel();
-//
-//        try {
-//            Thread.sleep(3000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    public void sendMsg() throws IOException {
-//        DatagramSocket socket = new DatagramSocket(0);
-//        String log = "MyLogData!";
-//
-//        DatagramPacket dp = new DatagramPacket(log.getBytes(Charset.forName("UTF-8")), 0, log.length(), InetAddress.getByName("127.0.0.1"), 9005);
-//        socket.send(dp);
-//    }
-
 }

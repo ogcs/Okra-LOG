@@ -16,25 +16,28 @@
 
 package org.ogcs.log;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicLong;
+import org.junit.Assert;
+import org.junit.Test;
+import org.ogcs.log.util.XmlUtil;
 
 /**
+ * 检验XmlUtil是否正确
+ *
  * @author TinyZ
- * @date 2016/6/24.
+ * @date 2016-07-07.
  */
-public class LogProcessor {
+public class XmlUtilTest {
 
-    private AtomicLong logsSize = new AtomicLong(0);
-    private Struct struct;
-    protected Queue<String[]> logs;
-    private int limit;
-
-    public LogProcessor(Struct struct) {
-        this.struct = struct;
-        this.logs = new ConcurrentLinkedQueue<>();
+    @Test
+    public void testValidateXml() {
+        boolean tf = XmlUtil.validateXml("./conf/aolog.xml");
+        Assert.assertEquals(tf, true);
     }
 
-
+    @Test
+    public void testValidateXml2() {
+        // okra-log.xsd文件默认在类路径下
+        boolean tf = XmlUtil.validateXml(XmlUtil.class.getResource("/okra-log.xsd").getPath(), "./conf/aolog.xml");
+        Assert.assertEquals(tf, true);
+    }
 }

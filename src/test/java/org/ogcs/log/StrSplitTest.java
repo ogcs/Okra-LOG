@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.ogcs.utilities.StringUtil;
 
 /**
+ * 对比几种常见的字符串拆分
  * @author TinyZ
  * @date 2016/6/24.
  */
