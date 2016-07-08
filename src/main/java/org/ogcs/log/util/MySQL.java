@@ -160,8 +160,10 @@ public final class MySQL {
     }
 
     /**
-     * @param table
-     * @return
+     * Create a prepare query sql.
+     *
+     * @param table The database table bean.
+     * @return return prepare query sql.
      */
     public static String prepareQuery(Table table) {
         Field[] fields = table.getFields();
@@ -194,7 +196,14 @@ public final class MySQL {
                 .toString();
     }
 
-    public static String sqlInsert(Table table, String data) {
+    /**
+     * 针对老本MySQL(不支持PrepareStat的版本). 直接生成SQL语句.
+     *
+     * @param table 数据库表Bean
+     * @param data  日志数据
+     * @return 返回SQL语句
+     */
+    public static String insertSQL(Table table, String data) {
         if (verifyTableValid(table)) {
             String[] split = data.split("\\|");
             String tableName = split[0];

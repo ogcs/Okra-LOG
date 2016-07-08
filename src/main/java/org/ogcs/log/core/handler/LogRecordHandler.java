@@ -21,8 +21,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ogcs.log.core.MissionBoard;
 import org.ogcs.log.config.OkraConfig;
+import org.ogcs.log.core.MissionBoard;
 import org.ogcs.log.core.builder.Table;
 import org.ogcs.utilities.StringUtil;
 
@@ -51,6 +51,10 @@ public class LogRecordHandler extends SimpleChannelInboundHandler<String> {
         Table table = missions.getParser().getTable(split[0]);
         if (table == null) {
             LOG.error("Unknown table [ " + split[0] + " ], msg : " + msg);
+            return;
+        }
+        if (table.getFields().length + 1 != split.length) {
+            LOG.error("[msg] log param element size is [" + split.length + "]. Field size is [ " + split.length + " ], msg : " + msg);
             return;
         }
         missions.add(split[0], split);

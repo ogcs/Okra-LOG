@@ -48,6 +48,9 @@ public final class LogRecordTask implements Releasable {
         this.list = list;
     }
 
+    /**
+     * Write log to database.
+     */
     public void record() {
         if (struct == null) throw new NullPointerException("struct");
         if (list == null || list.isEmpty()) throw new IllegalStateException("list is Null or size is empty.");
