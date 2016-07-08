@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.netty;
+package org.ogcs.log.core.handler;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Simple IP filter.
+ * Simple IP filter. Use to filter report log info.
  *
  * @author TinyZ
  * @date 2016-07-05.

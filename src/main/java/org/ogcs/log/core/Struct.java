@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package org.ogcs.log;
+package org.ogcs.log.core;
 
-import org.ogcs.log.disruptor.LogRecordTask;
-import org.ogcs.log.parser.Table;
+import org.ogcs.log.core.builder.Table;
 import org.ogcs.log.util.MySQL;
 import org.ogcs.utilities.StringUtil;
 
@@ -37,7 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Struct {
 
     /**
-     * MySQL table bean.
+     * MySQL table builder.
      */
     private Table table;
     /**
@@ -124,7 +123,7 @@ public class Struct {
             logsSize.decrementAndGet();
         }
         if (!list.isEmpty()) {
-            board.publish(new LogRecordTask(this, list));
+            board.publish(this, list);
         }
     }
 
@@ -135,7 +134,7 @@ public class Struct {
             list.add(params);
         }
         if (!list.isEmpty()) {
-            board.publish(new LogRecordTask(this, list));
+            board.publish(this, list);
         }
     }
 

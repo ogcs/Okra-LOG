@@ -5,9 +5,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.junit.Test;
 import org.ogcs.log.config.OkraConfig;
 import org.ogcs.log.config.OkraProperties;
-import org.ogcs.log.disruptor.LogRecordTask;
-import org.ogcs.log.parser.Table;
-import org.ogcs.log.parser.W3cDomParser;
+import org.ogcs.log.core.MissionBoard;
+import org.ogcs.log.core.Struct;
+import org.ogcs.log.core.builder.Table;
+import org.ogcs.log.core.handler.LogRecordTask;
+import org.ogcs.log.core.parser.W3cDomParser;
 import org.ogcs.utilities.StringUtil;
 
 import java.util.ArrayList;
@@ -43,7 +45,8 @@ public class LogRecordTaskTest {
 
         MissionBoard board = new MissionBoard(config);
         Struct struct = new Struct(logMoney, board);
-        task = new LogRecordTask(struct, list);
+        task = new LogRecordTask();
+        task.setValues(struct, list);
     }
 
     @Test

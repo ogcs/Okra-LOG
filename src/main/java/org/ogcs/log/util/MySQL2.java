@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.mysql;
+package org.ogcs.log.util;
 
-import org.ogcs.log.parser.Field;
-import org.ogcs.log.parser.Table;
+import org.ogcs.log.core.builder.Field;
+import org.ogcs.log.core.builder.Table;
 import org.ogcs.utilities.StringUtil;
 
 import java.sql.ResultSet;

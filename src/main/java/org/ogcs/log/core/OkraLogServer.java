@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.netty;
+package org.ogcs.log.core;
 
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.DatagramChannel;
-import org.ogcs.log.MissionBoard;
+import org.ogcs.log.core.MissionBoard;
 import org.ogcs.log.config.OkraConfig;
+import org.ogcs.log.core.handler.IpFilter;
+import org.ogcs.log.core.handler.IpFilterHandler;
+import org.ogcs.log.core.handler.LogRecordHandler;
 import org.ogcs.netty.impl.UdpProtocol;
 
 /**

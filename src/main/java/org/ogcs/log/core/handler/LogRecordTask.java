@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.disruptor;
+package org.ogcs.log.core.handler;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ogcs.app.Releasable;
-import org.ogcs.log.Struct;
+import org.ogcs.log.core.Struct;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,10 +27,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
+ * Disruptor ringBuffer event.
  * 数据记录任务
  *
  * @author TinyZ.
- * @date 2016-06-25.
+ * @date 2016-07-08.
  */
 public final class LogRecordTask implements Releasable {
 
@@ -38,7 +39,11 @@ public final class LogRecordTask implements Releasable {
     private Struct struct;
     private List<String[]> list;
 
-    public LogRecordTask(Struct struct, List<String[]> list) {
+    public LogRecordTask() {
+        // no-op
+    }
+
+    public void setValues(Struct struct, List<String[]> list) {
         this.struct = struct;
         this.list = list;
     }
@@ -93,6 +98,7 @@ public final class LogRecordTask implements Releasable {
             } catch (SQLException e) {
                 LOG.error("Database connection close error.", e);
             }
+            // release
             release();
         }
     }

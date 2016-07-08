@@ -15,7 +15,9 @@
  */
 
 /**
- * 仿tlog日志实现
+ * Okra-LOG.
+ * 
+ *
  *
  * @author TinyZ.
  * @date 2016/6/23

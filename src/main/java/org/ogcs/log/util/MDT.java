@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.mysql;
+package org.ogcs.log.util;
 
 /**
  * Mapping MySQL Data Types in Java.

@@ -20,7 +20,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ogcs.log.config.OkraConfig;
 import org.ogcs.log.config.OkraProperties;
-import org.ogcs.log.netty.OkraLogServer;
+import org.ogcs.log.core.MissionBoard;
+import org.ogcs.log.core.OkraLogServer;
 
 /**
  * @author TinyZ

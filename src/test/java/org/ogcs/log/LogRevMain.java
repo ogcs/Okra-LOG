@@ -21,6 +21,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 /**
  * @author TinyZ
@@ -38,6 +39,7 @@ public class LogRevMain {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
+
 
         // 发送测试数据
         DatagramSocket socket = new DatagramSocket(0);

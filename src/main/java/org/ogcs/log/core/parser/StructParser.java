@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.parser;
+package org.ogcs.log.core.parser;
+
+import org.ogcs.log.core.builder.Table;
 
 import java.util.Map;
 

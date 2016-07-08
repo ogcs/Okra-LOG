@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.parser;
+package org.ogcs.log.core.builder;
 
 import org.ogcs.utilities.StringUtil;
 

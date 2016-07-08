@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ogcs.log;
+package org.ogcs.log.core;
 
 import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
@@ -22,26 +22,31 @@ import com.lmax.disruptor.dsl.Disruptor;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.ogcs.log.config.OkraConfig;
-import org.ogcs.log.disruptor.LogRecordTask;
-import org.ogcs.log.disruptor.OkraLogRecordEvent;
-import org.ogcs.log.disruptor.OkraLogRecordEventHandler;
-import org.ogcs.log.parser.StructParser;
-import org.ogcs.log.parser.Table;
-import org.ogcs.log.parser.W3cDomParser;
+import org.ogcs.log.core.builder.Table;
+import org.ogcs.log.core.handler.LogRecordTask;
+import org.ogcs.log.core.handler.LogRecordTaskHandler;
+import org.ogcs.log.core.parser.StructParser;
+import org.ogcs.log.core.parser.W3cDomParser;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.lmax.disruptor.dsl.ProducerType.MULTI;
-import static org.ogcs.log.disruptor.OkraLogRecordEvent.DEF_EVENT_FACTORY;
+import static org.ogcs.log.core.handler.LogRecordTaskFactory.DEFAULT_FACTORY;
 
 /**
+ * 任务版.
+ *
+ * 客户端上报日志到任务版. 服务端队列形式保存日志, 累计一定数量的日志触发批量写入事件, 提交记录任务到Disruptor，写入MySQL数据库.
+ *
+ *
  * @author TinyZ
  * @date 2016-07-06.
  */
@@ -52,21 +57,10 @@ public class MissionBoard {
 
     private OkraConfig config;
     private Map<String, Struct> board;
-    private Disruptor<OkraLogRecordEvent> disruptor;
+    private Disruptor<LogRecordTask> disruptor;
     private DataSource dataSource;
     private StructParser<Table> parser;
     private double version;
-
-    public MissionBoard() {
-        //  Disruptor
-        this.disruptor = new Disruptor<>(DEF_EVENT_FACTORY, DEF_BUFFER_SIZE, DEFAULT_POOL, MULTI, new BlockingWaitStrategy());
-        this.disruptor.handleEventsWith(new OkraLogRecordEventHandler());
-//        this.disruptor.handleEventsWithWorkerPool(); // TODO: 用于后期EventHandler和WorkPool的WorkHandler对比测试
-//        this.disruptor.handleExceptionsWith(exceptionHandler);
-        this.disruptor.start();
-
-        this.board = new ConcurrentHashMap<>();
-    }
 
     public MissionBoard(OkraConfig config) {
         if (config == null) throw new NullPointerException("config");
@@ -81,8 +75,8 @@ public class MissionBoard {
         this.dataSource = new HikariDataSource(hikariConfig);
         //  Disruptor
         int rbSize = (config.getRingBufferSize() % 2 == 0 && config.getRingBufferSize() > 0) ? config.getRingBufferSize() : DEF_BUFFER_SIZE;
-        this.disruptor = new Disruptor<>(DEF_EVENT_FACTORY, rbSize, DEFAULT_POOL, MULTI, new BlockingWaitStrategy());
-        this.disruptor.handleEventsWith(new OkraLogRecordEventHandler());
+        this.disruptor = new Disruptor<>(DEFAULT_FACTORY, rbSize, DEFAULT_POOL, MULTI, new BlockingWaitStrategy());
+        this.disruptor.handleEventsWith(new LogRecordTaskHandler());
 //        this.disruptor.handleEventsWithWorkerPool(); // TODO: 用于后期EventHandler和WorkPool的WorkHandler对比测试
 //        this.disruptor.handleExceptionsWith(exceptionHandler);
         this.disruptor.start();
@@ -100,12 +94,12 @@ public class MissionBoard {
         struct.add(params);
     }
 
-    public void publish(LogRecordTask task) {
-        RingBuffer<OkraLogRecordEvent> rb = disruptor.getRingBuffer();
+    public void publish(Struct struct, List<String[]> list) {
+        RingBuffer<LogRecordTask> rb = disruptor.getRingBuffer();
         long next = rb.next();
         try {
-            OkraLogRecordEvent event = rb.get(next);
-            event.setValues(task);
+            LogRecordTask event = rb.get(next);
+            event.setValues(struct, list);
         } finally {
             rb.publish(next);
         }

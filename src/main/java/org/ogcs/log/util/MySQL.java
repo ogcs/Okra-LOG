@@ -18,11 +18,10 @@ package org.ogcs.log.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ogcs.log.mysql.DataType;
-import org.ogcs.log.parser.Field;
-import org.ogcs.log.parser.FieldBuilder;
-import org.ogcs.log.parser.Table;
-import org.ogcs.log.parser.TableBuilder;
+import org.ogcs.log.core.builder.Field;
+import org.ogcs.log.core.builder.FieldBuilder;
+import org.ogcs.log.core.builder.Table;
+import org.ogcs.log.core.builder.TableBuilder;
 import org.ogcs.utilities.StringUtil;
 
 import java.sql.Connection;
@@ -32,8 +31,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.ogcs.log.mysql.DataType.Codes.NUMERIC_TYPE;
-import static org.ogcs.log.mysql.DataType.verify;
+import static org.ogcs.log.util.DataType.Codes.NUMERIC_TYPE;
+import static org.ogcs.log.util.DataType.verify;
 
 /**
  * MySQL工具
@@ -439,7 +438,7 @@ public final class MySQL {
     }
 
     public static String renameTableSQL(String database, String oldTableName, String newTableName) {
-        return " RENAME TABLE " + org.ogcs.log.mysql.MySQL.tableName(database, oldTableName) + " TO " + org.ogcs.log.mysql.MySQL.tableName(database, newTableName);
+        return " RENAME TABLE " + tableName(database, oldTableName) + " TO " + tableName(database, newTableName);
     }
 
     /**

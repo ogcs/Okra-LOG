@@ -17,9 +17,9 @@
 package org.ogcs.log;
 
 import org.junit.Test;
-import org.ogcs.log.parser.Field;
-import org.ogcs.log.parser.Table;
-import org.ogcs.log.parser.W3cDomParser;
+import org.ogcs.log.core.builder.Field;
+import org.ogcs.log.core.builder.Table;
+import org.ogcs.log.core.parser.W3cDomParser;
 import org.ogcs.log.util.MySQL;
 
 import java.util.ArrayList;

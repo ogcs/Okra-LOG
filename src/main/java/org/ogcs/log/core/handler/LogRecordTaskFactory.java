@@ -14,30 +14,20 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.disruptor;
+package org.ogcs.log.core.handler;
 
 import com.lmax.disruptor.EventFactory;
 
 /**
  * @author TinyZ
- * @date 2016/6/24.
+ * @date 2016-07-08.
  */
-public class OkraLogRecordEvent {
+public class LogRecordTaskFactory implements EventFactory<LogRecordTask> {
 
-    private LogRecordTask task;
+    public static final LogRecordTaskFactory DEFAULT_FACTORY = new LogRecordTaskFactory();
 
-    public void setValues(LogRecordTask task) {
-        this.task = task;
+    @Override
+    public LogRecordTask newInstance() {
+        return new LogRecordTask();
     }
-
-    public LogRecordTask task() {
-        return task;
-    }
-
-    public static final EventFactory<OkraLogRecordEvent> DEF_EVENT_FACTORY = new EventFactory<OkraLogRecordEvent>() {
-        @Override
-        public OkraLogRecordEvent newInstance() {
-            return new OkraLogRecordEvent();
-        }
-    };
 }

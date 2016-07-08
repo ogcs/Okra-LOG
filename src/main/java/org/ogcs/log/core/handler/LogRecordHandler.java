@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.netty;
+package org.ogcs.log.core.handler;
 
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ogcs.log.MissionBoard;
+import org.ogcs.log.core.MissionBoard;
 import org.ogcs.log.config.OkraConfig;
-import org.ogcs.log.parser.Table;
+import org.ogcs.log.core.builder.Table;
 import org.ogcs.utilities.StringUtil;
 
 /**

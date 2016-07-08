@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.mysql;
+package org.ogcs.log.util;
 
-import org.ogcs.log.parser.Field;
-import org.ogcs.log.parser.Table;
+import org.ogcs.log.core.builder.Field;
+import org.ogcs.log.core.builder.Table;
 import org.ogcs.utilities.StringUtil;
 
 import java.sql.ResultSet;
@@ -33,7 +33,7 @@ import java.util.List;
  * @author TinyZ
  * @since 1.0
  */
-public final class MySQL {
+public final class MySQLOld {
 
     /**
      * Get Table from database
@@ -51,8 +51,8 @@ public final class MySQL {
         if (tableName == null) {
             throw new NullPointerException("tableName");
         }
-        String sqlShowTableStatus = MySQL.sqlShowTableStatus(database, tableName);
-        String sqlShowFullField = MySQL.sqlShowFullField(database, tableName);
+        String sqlShowTableStatus = sqlShowTableStatus(database, tableName);
+        String sqlShowFullField = sqlShowFullField(database, tableName);
         statement.execute(sqlShowTableStatus);
 // 获取字段名
 //        ResultSetMetaData metaData = statement.getResultSet().getMetaData();

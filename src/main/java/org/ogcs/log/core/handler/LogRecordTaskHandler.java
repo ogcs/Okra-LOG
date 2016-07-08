@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.disruptor;
+package org.ogcs.log.core.handler;
 
 import com.lmax.disruptor.EventHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class OkraLogRecordEventHandler implements EventHandler<OkraLogRecordEvent> {
+/**
+ * Disruptor 's ringBuffer event handler.
+ */
+public class LogRecordTaskHandler implements EventHandler<LogRecordTask> {
 
-    private static final Logger LOG = LogManager.getLogger(OkraLogRecordEventHandler.class);
+    private static final Logger LOG = LogManager.getLogger(LogRecordTaskHandler.class);
 
     @Override
-    public void onEvent(OkraLogRecordEvent event, long sequence, boolean endOfBatch) {
+    public void onEvent(LogRecordTask event, long sequence, boolean endOfBatch) {
         try {
-            LogRecordTask task = event.task();
-            if (task != null) {
-                task.record();
-            }
+            event.record();
         } catch (Exception e) {
-            LOG.error("Record Error : ", e);
+            LOG.error("LogRecordTask Error : ", e);
         } finally {
-            event.setValues(null);
+            event.release();
         }
     }
 }

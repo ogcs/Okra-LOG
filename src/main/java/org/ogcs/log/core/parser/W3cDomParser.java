@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.parser;
+package org.ogcs.log.core.parser;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ogcs.log.core.builder.Field;
+import org.ogcs.log.core.builder.Table;
 import org.ogcs.log.util.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

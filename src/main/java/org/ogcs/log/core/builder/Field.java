@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.parser;
+package org.ogcs.log.core.builder;
 
-import org.ogcs.log.mysql.DataType;
+import org.ogcs.log.util.DataType;
 import org.ogcs.utilities.StringUtil;
 
 /**
- * MySQL table's field bean.
+ * MySQL table's field builder.
  *
  * @author TinyZ
  * @date 2016-07-01.

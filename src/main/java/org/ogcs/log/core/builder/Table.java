@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.parser;
-
-import static org.ogcs.log.parser.TableBuilder.*;
+package org.ogcs.log.core.builder;
 
 /**
- * MySQL table bean.
+ * MySQL table builder.
  *
  * @since 1.0
  */
@@ -44,11 +42,11 @@ public class Table<F extends Field> {
      * @param desc   Database table's description.
      */
     public Table(String name, F[] fields, String desc) {
-        this(null, name, DEFAULT_DB_ENGINE, DEFAULT_CHARSET, DEFAULT_COLLATE, desc, 0, fields);
+        this(null, name, TableBuilder.DEFAULT_DB_ENGINE, TableBuilder.DEFAULT_CHARSET, TableBuilder.DEFAULT_COLLATE, desc, 0, fields);
     }
 
     public Table(String database, String name, F[] fields, String desc) {
-        this(database, name, DEFAULT_DB_ENGINE, DEFAULT_CHARSET, DEFAULT_COLLATE, desc, 0, fields);
+        this(database, name, TableBuilder.DEFAULT_DB_ENGINE, TableBuilder.DEFAULT_CHARSET, TableBuilder.DEFAULT_COLLATE, desc, 0, fields);
     }
 
     public Table(String database, String name, String dbEngine, String charset, String collate, String desc, int autoIncrement, F[] fields) {

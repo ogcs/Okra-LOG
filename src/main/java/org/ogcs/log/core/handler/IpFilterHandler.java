@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.netty;
+package org.ogcs.log.core.handler;
 
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;

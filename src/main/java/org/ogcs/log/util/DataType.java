@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.mysql;
+package org.ogcs.log.util;
 
 import java.util.HashMap;
 import java.util.Map;
