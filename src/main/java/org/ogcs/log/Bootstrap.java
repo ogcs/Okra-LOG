@@ -33,11 +33,17 @@ public class Bootstrap {
 
     public static void main(String[] args) {
         LOG.info("Bootstrap Okra-LOG ...");
-        OkraConfig config = OkraProperties.getConfig();
-        MissionBoard missionBoard = new MissionBoard(config);
-
-        OkraLogServer server = new OkraLogServer(config, missionBoard);
-        server.start();
-        LOG.info("Okra-LOG bootstrap success.");
+        OkraLogServer server = null;
+        try {
+            OkraConfig config = OkraProperties.getConfig();
+            MissionBoard missionBoard = new MissionBoard(config);
+            server = new OkraLogServer(config, missionBoard);
+            server.start();
+            LOG.info("Okra-LOG bootstrap success.");
+        } catch (Exception e) {
+            if (server != null)
+                server.stop();
+            LOG.info("Okra-LOG bootstrap failure.", e);
+        }
     }
 }
