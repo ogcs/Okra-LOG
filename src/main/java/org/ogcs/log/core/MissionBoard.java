@@ -82,6 +82,11 @@ public class MissionBoard {
         this.disruptor.start();
         //  Struct parser
         this.parser = new W3cDomParser(config.getLogPath());
+
+        // add shutdown hook
+        Runtime.getRuntime().addShutdownHook(new Thread(()-> {
+            publishAll();
+        }));
     }
 
     public void add(String tableName, String[] params) {
