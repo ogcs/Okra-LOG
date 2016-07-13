@@ -31,8 +31,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.ogcs.log.util.DataType.Codes.NUMERIC_TYPE;
-import static org.ogcs.log.util.DataType.verify;
+import static org.ogcs.log.util.DataType.*;
 
 /**
  * MySQL工具
@@ -292,11 +291,11 @@ public final class MySQL {
     }
 
     public static String numericOrString(String dataType, String value) {
-        return verify(dataType, NUMERIC_TYPE) ? StringUtil.isEmpty(value) ? "0" : value : "'" + value + "'";
+        return isNumericType(dataType) ? StringUtil.isEmpty(value) ? "0" : value : "'" + value + "'";
     }
 
     public static void numericOrString(StringBuilder sb, String dataType, String value) {
-        if (verify(dataType, NUMERIC_TYPE)) {
+        if (isNumericType(dataType)) {
             sb.append(StringUtil.isEmpty(value) ? "0" : value);
         } else {
             sb.append("'").append(value).append("'");
@@ -348,9 +347,9 @@ public final class MySQL {
      *     Example: `xStr_2` VARCHAR(50) CHARSET gb2312 COLLATE gb2312_chinese_ci NULL
      * </pre>
      *
-     * @param builder
-     * @param field
-     * @return
+     * @param builder The String builder.
+     * @param field The table's field.
+     * @return Return The String builder.
      */
     public static StringBuilder fieldCreateSQL(StringBuilder builder, Field field) {
         return fieldSQL(builder, field);
@@ -361,9 +360,9 @@ public final class MySQL {
      *     Example : ADD COLUMN `xy1` INT(11) UNSIGNED NOT NULL  COMMENT 'ds' AFTER `xStr_2`,
      * </pre>
      *
-     * @param lastColumnName
-     * @param field
-     * @return
+     * @param lastColumnName The table last column's name.
+     * @param field The table's field.
+     * @return Return query SQL.
      */
     public static String fieldAddColumnSQL(String lastColumnName, Field field) {
         StringBuilder builder = new StringBuilder();
@@ -395,20 +394,22 @@ public final class MySQL {
         if (!StringUtil.isEmpty(field.getLength())) {
             builder.append(" (").append(field.getLength()).append(") ");
         }
-        if (field.isUnsigned() && field.verify(DataType.Codes.UNSIGNED)) {
+        if (field.isUnsigned() && isUnsigned(field.getType())) {
             builder.append(" UNSIGNED ");
         }
-        if (field.isZeroFill() && field.verify(DataType.Codes.ZERO_FILL)) {
+        if (field.isZeroFill() && isZeroFill(field.getType())) {
             builder.append(" ZEROFILL ");
         }
-        if (!StringUtil.isEmpty(field.getCharset()) && field.verify(DataType.Codes.HAS_CHARSET)) {
-            builder.append(" CHARSET ").append(field.getCharset());
-        }
-        if (!StringUtil.isEmpty(field.getCollate()) && field.verify(DataType.Codes.HAS_COLLATE)) {
-            builder.append(" COLLATE ").append(field.getCollate());
+        if (isHasCharset(field.getType())) {
+            if (!StringUtil.isEmpty(field.getCharset())) {
+                builder.append(" CHARSET ").append(field.getCharset());
+            }
+            if (!StringUtil.isEmpty(field.getCollate())) {
+                builder.append(" COLLATE ").append(field.getCollate());
+            }
         }
         builder.append((field.isPrimaryKey() || field.isNotNull()) ? " NOT NULL " : " NULL ");
-        if (field.isAutoIncrement() && field.verify(DataType.Codes.AUTO_INCREMENT)) {
+        if (field.isAutoIncrement() && isAutoIncrement(field.getType())) {
             builder.append(" AUTO_INCREMENT ");
         }
         if (!StringUtil.isEmpty(field.getDefaultValue()) && !field.isPrimaryKey()) {
@@ -474,4 +475,53 @@ public final class MySQL {
         return autoIncrementCount <= 1;
     }
 
+    public static boolean isAutoIncrement(String type) {
+        return TINYINT.equals(type) ||
+                SMALLINT.equals(type) ||
+                MEDIUMINT.equals(type) ||
+                INT.equals(type) ||
+                INTEGER.equals(type) ||
+                BIGINT.equals(type) ||
+                FLOAT.equals(type) ||
+                DOUBLE.equals(type);
+    }
+
+    public static boolean isUnsigned(String type) {
+        return isAutoIncrement(type) || DECIMAL.equals(type);
+    }
+
+    public static boolean isZeroFill(String type) {
+        return isAutoIncrement(type);
+    }
+
+    public static boolean isNumericType(String type) {
+        return isAutoIncrement(type) ||
+                BIT.equals(type) ||
+                DECIMAL.equals(type);
+    }
+
+    public static boolean isHasCharset(String type) {
+        return CHAR.equals(type) ||
+                VARCHAR.equals(type) ||
+                TEXT.equals(type) ||
+                LONGTEXT.equals(type) ||
+                MEDIUMTEXT.equals(type) ||
+                TINYTEXT.equals(type);
+    }
+
+    public static boolean isDateType(String type) {
+        return DATE.equals(type) ||
+                TIME.equals(type) ||
+                YEAR.equals(type) ||
+                DATETIME.equals(type) ||
+                TIMESTAMP.equals(type);
+    }
+
+    public static boolean isStringType(String type) {
+        return isHasCharset(type) ||
+                BLOB.equals(type) ||
+                LONGBLOB.equals(type) ||
+                MEDIUMBLOB.equals(type) ||
+                TINYBLOB.equals(type);
+    }
 }

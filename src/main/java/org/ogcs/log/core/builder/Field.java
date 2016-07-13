@@ -17,6 +17,7 @@
 package org.ogcs.log.core.builder;
 
 import org.ogcs.log.util.DataType;
+import org.ogcs.log.util.MySQL;
 import org.ogcs.utilities.StringUtil;
 
 /**
@@ -124,31 +125,23 @@ public class Field {
         }
         this.isPrimaryKey = isPrimaryKey;
         this.isNotNull = isPrimaryKey || isNotNull;
-        if (verify(DataType.Codes.UNSIGNED)) {
+        if (MySQL.isUnsigned(type)) {
             this.isUnsigned = isUnsigned;
         }
-        if (verify(DataType.Codes.AUTO_INCREMENT)) {
+        if (MySQL.isAutoIncrement(type)) {
             this.isAutoIncrement = isAutoIncrement;
         }
-        if (!StringUtil.isEmpty(charset) && verify(DataType.Codes.HAS_CHARSET)) {
-            this.charset = charset;
-        }
-        if (!StringUtil.isEmpty(collate) && verify(DataType.Codes.HAS_COLLATE)) {
-            this.collate = collate;
+        if (MySQL.isHasCharset(type)) {
+            if (!StringUtil.isEmpty(charset)) {
+                this.charset = charset;
+            }
+            if (!StringUtil.isEmpty(collate)) {
+                this.collate = collate;
+            }
         }
         if (!StringUtil.isEmpty(desc)) {
             this.desc = desc;
         }
-    }
-
-    /**
-     * Verify field attributes is valid.
-     *
-     * @param code attribute code
-     * @return Return true if this field can set this attribute value, false otherwise.
-     */
-    public boolean verify(int code) {
-        return DataType.verify(this.type, code);
     }
 
     public String getName() {
