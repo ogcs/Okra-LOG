@@ -31,7 +31,7 @@ import java.sql.SQLException;
  * @date 2016-07-04.
  */
 
-public class CreateTableTest {
+public class CreateTableTest1 {
 
     @org.junit.Test
     public void createTable() {
