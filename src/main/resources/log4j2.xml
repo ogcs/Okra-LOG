@@ -2,12 +2,12 @@
 <Configuration status="WARN">
     <Appenders>
         <Console name="OUT">
-            <PatternLayout pattern="[%d]-[%t]-[%c{1}-%line]-[%p] - %m%n "/>
+            <PatternLayout pattern="[%d]-[%t]-[%c{1}:%line]-[%p] - %m%n "/>
         </Console>
         <RollingRandomAccessFile name="RRAF" fileName="logs/app.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log">
             <PatternLayout>
                 <!--  [日期]-[] -->
-                <Pattern>[%d]-[%c{1}-%line]-[%t]-[%p] - %m%n </Pattern>
+                <Pattern>[%d]-[%c{1}:%line]-[%t]-[%p] - %m%n </Pattern>
             </PatternLayout>
             <Policies>
                 <!-- 根据filePattern中的最小单位(日期-天)为最小单位划分文件 -->
@@ -19,10 +19,11 @@
     </Appenders>
     <Loggers>
         <AsyncRoot level="ERROR">
-            <AppenderRef ref="OUT"/>
+            <AppenderRef ref="OUT" />
             <AppenderRef ref="RRAF"/>
         </AsyncRoot>
-        <AsyncLogger name="org.ogcs.log" level="INFO" includeLocation="true">
+        <AsyncLogger name="org.ogcs.log" level="INFO" includeLocation="true" additivity="false">
+            <AppenderRef ref="OUT" />
             <AppenderRef ref="RRAF"/>
         </AsyncLogger>
     </Loggers>
