@@ -16,7 +16,6 @@
 
 package org.ogcs.log.core.builder;
 
-import org.ogcs.log.util.DataType;
 import org.ogcs.log.util.MySQL;
 import org.ogcs.utilities.StringUtil;
 
@@ -92,7 +91,7 @@ public class Field {
      * Field constructor
      *
      * @param name the fieldSQL field's  name
-     * @param type the data type. see {@link DataType}
+     * @param type the data type. see {@link MySQL.DataType}
      */
     public Field(String name, String type) {
         this(name, type, null, null, false, false, false, false, null, null, null);
@@ -102,7 +101,7 @@ public class Field {
      * Field constructor
      *
      * @param name            the fieldSQL field's  name
-     * @param type            the data type. see {@link DataType}
+     * @param type            the data type. see {@link MySQL.DataType}
      * @param length          the data length attribute. (string type fieldSQL must set this attribute)
      * @param defaultValue    the data default value
      * @param isPrimaryKey    the fieldSQL is primary key

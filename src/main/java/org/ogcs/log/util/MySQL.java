@@ -31,7 +31,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.ogcs.log.util.DataType.*;
+import static org.ogcs.log.util.MySQL.DataType.*;
 
 /**
  * MySQL工具
@@ -523,5 +523,40 @@ public final class MySQL {
                 LONGBLOB.equals(type) ||
                 MEDIUMBLOB.equals(type) ||
                 TINYBLOB.equals(type);
+    }
+
+    /**
+     * MySQL Data Type
+     * @since 1.0
+     */
+    public interface DataType {
+        // Numeric type
+        String BIT = "BIT";
+        String TINYINT = "TINYINT";
+        String SMALLINT = "SMALLINT";
+        String MEDIUMINT = "MEDIUMINT";
+        String INT = "INT";
+        String INTEGER = "INTEGER";
+        String BIGINT = "BIGINT";
+        String FLOAT = "FLOAT";
+        String DOUBLE = "DOUBLE";
+        String DECIMAL = "DECIMAL";
+        // Date and time type
+        String DATE = "DATE";
+        String TIME = "TIME";
+        String YEAR = "YEAR";
+        String DATETIME = "DATETIME";
+        String TIMESTAMP = "TIMESTAMP";
+        // String type
+        String CHAR = "CHAR";
+        String VARCHAR = "VARCHAR";
+        String TINYBLOB = "TINYBLOB";
+        String TINYTEXT = "TINYTEXT";
+        String BLOB = "BLOB";
+        String TEXT = "TEXT";
+        String MEDIUMBLOB = "MEDIUMBLOB";
+        String MEDIUMTEXT = "MEDIUMTEXT";
+        String LONGBLOB = "LONGBLOB";
+        String LONGTEXT = "LONGTEXT";
     }
 }
