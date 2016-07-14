@@ -25,6 +25,7 @@ import java.util.Properties;
 
 /**
  * Okra Properties.
+ *
  * @author TinyZ
  * @date 2016-07-07.
  */
@@ -35,6 +36,7 @@ public final class OkraProperties {
     private static OkraConfig okraConfig;
 
     public static int LOG_PORT = 9005;
+    public static long LOG_TASK_INTERVAL = 5000L;
     public static String LOG_PATH = "./conf/aolog.xml";
     public static char LOG_SEPARATOR = '|';
     public static String LOG_XSD_PATH = "/okra-log.xsd";
@@ -65,6 +67,7 @@ public final class OkraProperties {
             LOG_SEPARATOR = prop.getProperty("okra.log.separator", String.valueOf(LOG_SEPARATOR)).charAt(0);
             LOG_RING_BUFFER_SIZE = Integer.valueOf(prop.getProperty("okra.log.rb.size", String.valueOf(LOG_RING_BUFFER_SIZE)));
             LOG_PORT = Integer.valueOf(prop.getProperty("okra.log.port", String.valueOf(LOG_PORT)));
+            LOG_TASK_INTERVAL = Long.valueOf(prop.getProperty("okra.log.task.interval", String.valueOf(LOG_TASK_INTERVAL)));
             // set
             System.setProperty("okra.log.xsd.path", LOG_XSD_PATH);
         } catch (Exception e) {
@@ -72,10 +75,18 @@ public final class OkraProperties {
         }
     }
 
+    /**
+     * @return Return Okra Config.
+     * @see {@link OkraConfig}
+     */
     public static OkraConfig getConfig() {
         if (okraConfig != null) {
             return okraConfig;
         }
-        return new OkraConfig(LOG_PORT, HIKARI_CONFIG_PATH, DATABASE_JDBC_URL, DATABASE_USER, DATABASE_PSW, LOG_RING_BUFFER_SIZE, LOG_XSD_PATH, LOG_PATH, LOG_SEPARATOR);
+        okraConfig = new OkraConfig(
+                LOG_PORT, HIKARI_CONFIG_PATH, DATABASE_JDBC_URL, DATABASE_USER, DATABASE_PSW,
+                LOG_RING_BUFFER_SIZE, LOG_XSD_PATH, LOG_PATH, LOG_SEPARATOR, LOG_TASK_INTERVAL
+        );
+        return okraConfig;
     }
 }

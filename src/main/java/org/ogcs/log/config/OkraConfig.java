@@ -46,8 +46,14 @@ public class OkraConfig {
      * Disruptor ringBuffer's size
      */
     private int ringBufferSize;
+    /**
+     * 定时写入任务的时间间隔
+     */
+    private long taskInterval;
 
-    public OkraConfig(int port, String hikariCPConfigPath, String dbJdbcUrl, String dbUsername, String dbPassword, int ringBufferSize, String xsdPath, String logPath, char logSeparator) {
+    public OkraConfig(
+            int port, String hikariCPConfigPath, String dbJdbcUrl, String dbUsername, String dbPassword,
+            int ringBufferSize, String xsdPath, String logPath, char logSeparator, long taskInterval) {
         this.port = port;
         this.hikariCPConfigPath = hikariCPConfigPath;
         this.dbJdbcUrl = dbJdbcUrl;
@@ -57,6 +63,7 @@ public class OkraConfig {
         this.xsdPath = xsdPath;
         this.logPath = logPath;
         this.logSeparator = logSeparator;
+        this.taskInterval = taskInterval;
     }
 
     public int getPort() {
@@ -129,5 +136,13 @@ public class OkraConfig {
 
     public void setLogSeparator(char logSeparator) {
         this.logSeparator = logSeparator;
+    }
+
+    public long getTaskInterval() {
+        return taskInterval;
+    }
+
+    public void setTaskInterval(long taskInterval) {
+        this.taskInterval = taskInterval;
     }
 }

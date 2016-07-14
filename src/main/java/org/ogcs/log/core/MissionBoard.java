@@ -44,9 +44,8 @@ import static org.ogcs.log.core.handler.LogRecordTaskFactory.DEFAULT_FACTORY;
 
 /**
  * 任务版.
- *
+ * <p>
  * 客户端上报日志到任务版. 服务端队列形式保存日志, 累计一定数量的日志触发批量写入事件, 提交记录任务到Disruptor，写入MySQL数据库.
- *
  *
  * @author TinyZ
  * @date 2016-07-06.
@@ -96,9 +95,9 @@ public class MissionBoard {
             } catch (Exception e) {
                 LOG.error("Error publishAll().", e);
             }
-        }, 1000L, 5000L, TimeUnit.MILLISECONDS);
+        }, 1000L, config.getTaskInterval(), TimeUnit.MILLISECONDS);
         // add shutdown hook
-        Runtime.getRuntime().addShutdownHook(new Thread(()-> {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             stop();
         }));
     }
