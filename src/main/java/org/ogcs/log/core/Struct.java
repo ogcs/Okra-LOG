@@ -55,6 +55,11 @@ public class Struct {
     private int limit;
     private AtomicLong logsSize = new AtomicLong(0);
 
+    /**
+     * 是否正在写入
+     */
+    private volatile boolean isWriting = false;
+
     public Struct(Table table, MissionBoard board) {
         if (table == null) throw new NullPointerException("table");
         if (board == null) throw new NullPointerException("board");
@@ -113,6 +118,10 @@ public class Struct {
     }
 
     public void record(int limit) {
+        if (isWriting) {
+            return;
+        }
+        isWriting = true;
         List<String[]> list = new ArrayList<>();
         while (list.size() < limit) {
             String[] poll = logs.poll();
@@ -125,9 +134,14 @@ public class Struct {
         if (!list.isEmpty()) {
             board.publish(this, list);
         }
+        isWriting = false;
     }
 
     public void recordAll() {
+        if (isWriting) {
+            return;
+        }
+        isWriting = true;
         List<String[]> list = new ArrayList<>();
         String[] params;
         while ((params = logs.poll()) != null) {
@@ -136,6 +150,7 @@ public class Struct {
         if (!list.isEmpty()) {
             board.publish(this, list);
         }
+        isWriting = false;
     }
 
     public Table getTable() {

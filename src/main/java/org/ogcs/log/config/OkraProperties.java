@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
+ * Okra Properties.
  * @author TinyZ
  * @date 2016-07-07.
  */

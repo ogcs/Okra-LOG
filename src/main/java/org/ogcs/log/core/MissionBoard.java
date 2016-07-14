@@ -21,12 +21,15 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ogcs.log.config.OkraConfig;
 import org.ogcs.log.core.builder.Table;
 import org.ogcs.log.core.handler.LogRecordTask;
 import org.ogcs.log.core.handler.LogRecordTaskHandler;
 import org.ogcs.log.core.parser.StructParser;
 import org.ogcs.log.core.parser.W3cDomParser;
+import org.ogcs.service.SimpleTaskService;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -34,9 +37,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 import static com.lmax.disruptor.dsl.ProducerType.MULTI;
 import static org.ogcs.log.core.handler.LogRecordTaskFactory.DEFAULT_FACTORY;
@@ -52,6 +53,8 @@ import static org.ogcs.log.core.handler.LogRecordTaskFactory.DEFAULT_FACTORY;
  */
 public class MissionBoard {
 
+    private static final Logger LOG = LogManager.getLogger(MissionBoard.class);
+
     private static final int DEF_BUFFER_SIZE = 16;
     private static final ExecutorService DEFAULT_POOL = Executors.newCachedThreadPool();
 
@@ -60,6 +63,8 @@ public class MissionBoard {
     private Disruptor<LogRecordTask> disruptor;
     private DataSource dataSource;
     private StructParser<Table> parser;
+    private SimpleTaskService tasks;
+    private ScheduledFuture<?> future;
     private double version;
 
     public MissionBoard(OkraConfig config) {
@@ -82,10 +87,19 @@ public class MissionBoard {
         this.disruptor.start();
         //  Struct parser
         this.parser = new W3cDomParser(config.getLogPath());
+        this.tasks = new SimpleTaskService();
 
+        // schedule publish task
+        this.future = this.tasks.scheduleAtFixedRate(() -> {
+            try {
+                publishAll();
+            } catch (Exception e) {
+                LOG.error("Error publishAll().", e);
+            }
+        }, 1000L, 5000L, TimeUnit.MILLISECONDS);
         // add shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(()-> {
-            publishAll();
+            stop();
         }));
     }
 
