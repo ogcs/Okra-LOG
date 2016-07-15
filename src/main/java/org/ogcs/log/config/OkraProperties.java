@@ -37,6 +37,7 @@ public final class OkraProperties {
 
     public static int LOG_PORT = 9005;
     public static long LOG_TASK_INTERVAL = 5000L;
+    public static int LOG_MAX_BATCH_SIZE = 100;
     public static String LOG_PATH = "./conf/aolog.xml";
     public static char LOG_SEPARATOR = '|';
     public static String LOG_XSD_PATH = "/okra-log.xsd";
@@ -68,6 +69,7 @@ public final class OkraProperties {
             LOG_RING_BUFFER_SIZE = Integer.valueOf(prop.getProperty("okra.log.rb.size", String.valueOf(LOG_RING_BUFFER_SIZE)));
             LOG_PORT = Integer.valueOf(prop.getProperty("okra.log.port", String.valueOf(LOG_PORT)));
             LOG_TASK_INTERVAL = Long.valueOf(prop.getProperty("okra.log.task.interval", String.valueOf(LOG_TASK_INTERVAL)));
+            LOG_MAX_BATCH_SIZE = Integer.valueOf(prop.getProperty("okra.log.max.batchSize", String.valueOf(LOG_MAX_BATCH_SIZE)));
             // set
             System.setProperty("okra.log.xsd.path", LOG_XSD_PATH);
         } catch (Exception e) {
@@ -85,7 +87,8 @@ public final class OkraProperties {
         }
         okraConfig = new OkraConfig(
                 LOG_PORT, HIKARI_CONFIG_PATH, DATABASE_JDBC_URL, DATABASE_USER, DATABASE_PSW,
-                LOG_RING_BUFFER_SIZE, LOG_XSD_PATH, LOG_PATH, LOG_SEPARATOR, LOG_TASK_INTERVAL
+                LOG_RING_BUFFER_SIZE, LOG_XSD_PATH, LOG_PATH, LOG_SEPARATOR, LOG_TASK_INTERVAL,
+                LOG_MAX_BATCH_SIZE
         );
         return okraConfig;
     }

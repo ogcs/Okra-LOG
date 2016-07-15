@@ -37,9 +37,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 import static com.lmax.disruptor.dsl.ProducerType.MULTI;
 import static org.ogcs.log.core.handler.LogRecordTaskFactory.DEFAULT_FACTORY;

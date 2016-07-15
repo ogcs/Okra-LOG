@@ -50,10 +50,14 @@ public class OkraConfig {
      * 定时写入任务的时间间隔
      */
     private long taskInterval;
+    /**
+     * The max prepare query to batch insert data into database's element size.
+     */
+    private int maxBatchSize;
 
     public OkraConfig(
             int port, String hikariCPConfigPath, String dbJdbcUrl, String dbUsername, String dbPassword,
-            int ringBufferSize, String xsdPath, String logPath, char logSeparator, long taskInterval) {
+            int ringBufferSize, String xsdPath, String logPath, char logSeparator, long taskInterval, int maxBatchSize) {
         this.port = port;
         this.hikariCPConfigPath = hikariCPConfigPath;
         this.dbJdbcUrl = dbJdbcUrl;
@@ -64,6 +68,7 @@ public class OkraConfig {
         this.logPath = logPath;
         this.logSeparator = logSeparator;
         this.taskInterval = taskInterval;
+        this.maxBatchSize = maxBatchSize;
     }
 
     public int getPort() {
@@ -144,5 +149,13 @@ public class OkraConfig {
 
     public void setTaskInterval(long taskInterval) {
         this.taskInterval = taskInterval;
+    }
+
+    public int getMaxBatchSize() {
+        return maxBatchSize;
+    }
+
+    public void setMaxBatchSize(int maxBatchSize) {
+        this.maxBatchSize = maxBatchSize;
     }
 }

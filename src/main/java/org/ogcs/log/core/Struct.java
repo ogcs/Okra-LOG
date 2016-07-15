@@ -64,13 +64,14 @@ public class Struct {
         if (table == null) throw new NullPointerException("table");
         if (board == null) throw new NullPointerException("board");
         this.board = board;
+        this.limit = board.getConfig().getMaxBatchSize();
+
         this.table = table;
         this.prepareQuery = MySQL.prepareQuery(table);
         if (StringUtil.isEmpty(this.prepareQuery)) {
             throw new IllegalStateException("prepareQuery is empty.");
         }
         this.logs = new ConcurrentLinkedQueue<>();
-        this.limit = 100;
     }
 
     /**
