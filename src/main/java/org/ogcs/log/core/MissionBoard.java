@@ -46,6 +46,8 @@ import static org.ogcs.log.core.handler.LogRecordTaskFactory.DEFAULT_FACTORY;
  *
  * 客户端上报日志到任务版. 服务端队列形式保存日志, 累计一定数量的日志触发批量写入事件, 提交记录任务到Disruptor，写入MySQL数据库.
  *
+ * Mission board.
+ * Client report log to mission board.
  *
  * @author TinyZ
  * @date 2016-07-06.
@@ -68,6 +70,9 @@ public class MissionBoard {
         init();
     }
 
+    /**
+     * Initialize mission board context.
+     */
     public void init() {
         this.board = new ConcurrentHashMap<>();
         //  HikariCP
@@ -89,6 +94,11 @@ public class MissionBoard {
         }));
     }
 
+    /**
+     * Add a log to struct task queue.
+     * @param tableName The table struct name.
+     * @param params The log data.
+     */
     public void add(String tableName, String[] params) {
         Struct struct = board.get(tableName);
         if (struct == null) {
@@ -99,6 +109,11 @@ public class MissionBoard {
         struct.add(params);
     }
 
+    /**
+     * Publish record task to record special table's log.
+     * @param struct The table struct.
+     * @param list The log data list.
+     */
     public void publish(Struct struct, List<String[]> list) {
         RingBuffer<LogRecordTask> rb = disruptor.getRingBuffer();
         long next = rb.next();
@@ -110,14 +125,25 @@ public class MissionBoard {
         }
     }
 
+    /**
+     * Publish record task to record all unrecorded log.
+     */
     public void publishAll() {
         board.values().forEach(Struct::recordAll);
     }
 
+    /**
+     * Stop running and publish all record task.
+     */
     public void stop() {
         publishAll();
     }
 
+    /**
+     * Get database connection.
+     * @return Return database connection.
+     * @throws SQLException
+     */
     public Connection getConnection() throws SQLException {
         if (dataSource == null) {
             return DriverManager.getConnection(config.getDbJdbcUrl(), config.getDbUsername(), config.getDbPassword());
@@ -125,7 +151,19 @@ public class MissionBoard {
         return dataSource.getConnection();
     }
 
+    /**
+     * Get the struct parser.
+     * @return Return the struct parser.
+     */
     public StructParser<Table> getParser() {
         return parser;
+    }
+
+    /**
+     * Get Okra-LOG config.
+     * @return Return custom settings.
+     */
+    public OkraConfig getConfig() {
+        return config;
     }
 }

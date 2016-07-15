@@ -37,7 +37,7 @@ public class Bootstrap {
         try {
             OkraConfig config = OkraProperties.getConfig();
             MissionBoard missionBoard = new MissionBoard(config);
-            server = new OkraLogServer(config, missionBoard);
+            server = new OkraLogServer(config.getPort(), missionBoard);
             server.start();
             LOG.info("Okra-LOG bootstrap success.");
         } catch (Exception e) {

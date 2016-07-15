@@ -35,11 +35,9 @@ public class LogRecordHandler extends SimpleChannelInboundHandler<String> {
 
     private static final Logger LOG = LogManager.getLogger(LogRecordHandler.class);
 
-    private MissionBoard missions;
-    private char separator;
+    private final MissionBoard missions;
 
-    public LogRecordHandler(OkraConfig config, MissionBoard missions) {
-        this.separator = config.getLogSeparator();
+    public LogRecordHandler(MissionBoard missions) {
         this.missions = missions;
     }
 
@@ -47,7 +45,10 @@ public class LogRecordHandler extends SimpleChannelInboundHandler<String> {
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
         if (LOG.isInfoEnabled())
             LOG.info("Report Log : " + msg);
-        String[] split = StringUtil.split(msg, separator);
+        if (missions == null) {
+            return;
+        }
+        String[] split = StringUtil.split(msg, missions.getConfig().getLogSeparator());
         Table table = missions.getParser().getTable(split[0]);
         if (table == null) {
             LOG.error("Unknown table [ " + split[0] + " ], msg : " + msg);

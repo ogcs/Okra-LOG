@@ -20,8 +20,6 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.DatagramChannel;
-import org.ogcs.log.core.MissionBoard;
-import org.ogcs.log.config.OkraConfig;
 import org.ogcs.log.core.handler.IpFilter;
 import org.ogcs.log.core.handler.IpFilterHandler;
 import org.ogcs.log.core.handler.LogRecordHandler;
@@ -29,24 +27,21 @@ import org.ogcs.netty.impl.UdpProtocol;
 
 /**
  * Okra-LOG server.
+ *
  * @author TinyZ.
  * @date 2016-07-05.
  */
 public class OkraLogServer extends UdpProtocol {
 
-    private OkraConfig config;
     private MissionBoard board;
     private IpFilter ipFilter;
 
-    public OkraLogServer(OkraConfig config, MissionBoard board) {
-        super(config.getPort());
-        this.config = config;
-        this.board = board;
+    public OkraLogServer(int port, MissionBoard board) {
+        this(port, board, null);
     }
 
-    public OkraLogServer(OkraConfig config, MissionBoard board, IpFilter filter) {
-        super(config.getPort());
-        this.config = config;
+    public OkraLogServer(int port, MissionBoard board, IpFilter filter) {
+        super(port);
         this.board = board;
         this.ipFilter = filter;
     }
@@ -58,7 +53,7 @@ public class OkraLogServer extends UdpProtocol {
             protected void initChannel(DatagramChannel ch) throws Exception {
                 ChannelPipeline cp = ch.pipeline();
                 cp.addLast("ipFilter", new IpFilterHandler(ipFilter));
-                cp.addLast("handler", new LogRecordHandler(config, board));
+                cp.addLast("handler", new LogRecordHandler(board));
             }
         };
     }
