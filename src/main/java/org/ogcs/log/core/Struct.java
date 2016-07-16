@@ -118,35 +118,26 @@ public class Struct {
         }
     }
 
-    public void record(int limit) {
-        if (isWriting) {
-            return;
-        }
-        isWriting = true;
-        List<String[]> list = new ArrayList<>();
-        while (list.size() < limit) {
-            String[] poll = logs.poll();
-            if (poll == null) {
-                break;
-            }
-            list.add(poll);
-            logsSize.decrementAndGet();
-        }
-        if (!list.isEmpty()) {
-            board.publish(this, list);
-        }
-        isWriting = false;
+    public void recordAll() {
+        record(-1);
     }
 
-    public void recordAll() {
-        if (isWriting) {
+    /**
+     * Record special count log.
+     * if limit number less than 0, will record all log.
+     * @param limit The record count.
+     */
+    public void record(int limit) {
+        if (isWriting)
             return;
-        }
         isWriting = true;
         List<String[]> list = new ArrayList<>();
         String[] params;
         while ((params = logs.poll()) != null) {
             list.add(params);
+            if (limit > 0 && list.size() >= limit) {
+                break;
+            }
         }
         if (!list.isEmpty()) {
             board.publish(this, list);
