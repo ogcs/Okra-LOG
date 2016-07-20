@@ -51,9 +51,13 @@ public final class OkraProperties {
         load();
     }
 
+    /**
+     * Load properties.
+     */
     public static void load() {
+        String filepath = System.getProperty("okra.config.path", DEFAULT_CONFIG_PATH);
         try {
-            InputStream is = new FileInputStream(DEFAULT_CONFIG_PATH);
+            InputStream is = new FileInputStream(filepath);
             Properties prop = new Properties();
             prop.load(is);
             // get
@@ -72,6 +76,7 @@ public final class OkraProperties {
             LOG_MAX_BATCH_SIZE = Integer.valueOf(prop.getProperty("okra.log.max.batchSize", String.valueOf(LOG_MAX_BATCH_SIZE)));
             // set
             System.setProperty("okra.log.xsd.path", LOG_XSD_PATH);
+            LOG.error("Load config successful.");
         } catch (Exception e) {
             LOG.error("Load config failure.", e);
         }
