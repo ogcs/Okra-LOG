@@ -21,7 +21,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ogcs.log.config.OkraConfig;
 import org.ogcs.log.core.MissionBoard;
 import org.ogcs.log.core.builder.Table;
 import org.ogcs.utilities.StringUtil;
