@@ -6,7 +6,7 @@ Okra-LOG是一个轻量级**UDP协议**日志服务系统。可用于收集客�
 
  1. 实现数据写入MySQL数据库.
 
-# Advanced features
+# Advanced Features
 
  1. 数据分析集成工具.[开发中]
  2. 支持不停机更新(数据库和日志).[开发中]
