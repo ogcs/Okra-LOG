@@ -344,7 +344,7 @@ public final class MySQL {
 
     /**
      * <pre>
-     *     Example: `xStr_2` VARCHAR(50) CHARSET gb2312 COLLATE gb2312_chinese_ci NULL
+     *     Example: `field_name` VARCHAR(50) CHARSET utf8 COLLATE utf8_general_ci NULL
      * </pre>
      *
      * @param builder The String builder.
@@ -357,7 +357,7 @@ public final class MySQL {
 
     /**
      * <pre>
-     *     Example : ADD COLUMN `xy1` INT(11) UNSIGNED NOT NULL  COMMENT 'ds' AFTER `xStr_2`,
+     *     Example : ADD COLUMN `field_name` INT(11) UNSIGNED NOT NULL  COMMENT 'comment_information' AFTER `front_field`,
      * </pre>
      *
      * @param lastColumnName The table last column's name.
@@ -375,7 +375,7 @@ public final class MySQL {
     /**
      * Change field attribute
      * <pre>
-     *     Example : CHANGE `xid` `xid1` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT '字段ID'
+     *     Example : CHANGE `table_name` `field_name` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'comment_information'
      * </pre>
      *
      * @param oldFieldName The old field name

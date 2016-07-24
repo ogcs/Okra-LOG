@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class IpFilter {
 
-    public static final boolean DEFAULT_ACCEPT = true;
+    private static final boolean DEFAULT_ACCEPT = true;
     /**
      * Default value. if the filter is empty.
      */
