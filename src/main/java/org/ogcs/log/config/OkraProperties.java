@@ -32,20 +32,20 @@ import java.util.Properties;
 public final class OkraProperties {
 
     private static final Logger LOG = LogManager.getLogger(OkraProperties.class);
-    private static final String DEFAULT_CONFIG_PATH = "./conf/config.properties";
+    private static final String DEFAULT_CONFIG_PATH = "./config/config.properties";
     private static OkraConfig okraConfig;
 
     public static int LOG_PORT = 9005;
     public static long LOG_TASK_INTERVAL = 5000L;
     public static int LOG_MAX_BATCH_SIZE = 100;
-    public static String LOG_PATH = "./conf/aolog.xml";
+    public static String LOG_PATH = "./config/aolog.xml";
     public static char LOG_SEPARATOR = '|';
     public static String LOG_XSD_PATH = "/okra-log.xsd";
     public static int LOG_RING_BUFFER_SIZE = 16;
     public static String DATABASE_JDBC_URL = "";
     public static String DATABASE_USER = "";
     public static String DATABASE_PSW = "";
-    public static String HIKARI_CONFIG_PATH = "./conf/hikari.properties";
+    public static String HIKARI_CONFIG_PATH = "./config/hikari.properties";
 
     static {
         load();

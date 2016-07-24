@@ -38,7 +38,7 @@ public class ObjAryToStrAryTest {
     private static final Field[] fields;
 
     static {
-        W3cDomParser w3c = new W3cDomParser("conf/aolog.xml");
+        W3cDomParser w3c = new W3cDomParser("config/aolog.xml");
         Table logMoney = w3c.getTable("log_money");
 
         System.out.println(MySQL.prepareQuery(logMoney));

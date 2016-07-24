@@ -34,7 +34,7 @@ public class LogRecordTaskTest {
 
         HikariDataSource dataSource = new HikariDataSource(hikariConfig);
         // xml
-        W3cDomParser parser = new W3cDomParser("conf/aolog.xml");
+        W3cDomParser parser = new W3cDomParser("config/aolog.xml");
         Table logMoney = parser.getTable("log_money");
         //  log data
         String str = "log_money|2016-06-24|openid|0|105|15|100|1000";
@@ -49,7 +49,7 @@ public class LogRecordTaskTest {
         task.setValues(struct, list);
     }
 
-    @Test
+//    @Test
     public void record() throws Exception {
         task.record();
     }
