@@ -72,7 +72,6 @@ public class MissionBoard {
     public MissionBoard(OkraConfig config) {
         if (config == null) throw new NullPointerException("config");
         this.config = config;
-        init();
     }
 
     /**
