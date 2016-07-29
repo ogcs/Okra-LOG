@@ -16,6 +16,8 @@
 
 package org.ogcs.log.core;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ogcs.log.core.builder.Table;
 import org.ogcs.log.util.MySQL;
 import org.ogcs.utilities.StringUtil;
@@ -35,43 +37,53 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class Struct {
 
+    private static final Logger LOG = LogManager.getLogger(Struct.class);
+
     /**
      * MySQL table builder.
      */
-    private Table table;
+    protected Table table;
     /**
      * The table prepare query sql.
      */
-    private String prepareQuery;
+    protected String prepareQuery;
     /**
      * The mission board.
      */
-    private MissionBoard board;
+    protected MissionBoard board;
+    /**
+     * The max threshold value of the logs queue's max length.
+     */
+    protected int threshold;
+    /**
+     * 每次批量写入数量
+     */
+    protected int batchCount;
     /**
      * 日志队列
      */
-    private Queue<String[]> logs;
-
-    private int limit;
-    private AtomicLong logsSize = new AtomicLong(0);
-
+    protected Queue<String[]> logs;
+    /**
+     * 日志队列长度
+     */
+    protected AtomicLong logsSize = new AtomicLong(0);
     /**
      * 是否正在写入
      */
-    private volatile boolean isWriting = false;
+    private volatile boolean writing = false;
 
     public Struct(Table table, MissionBoard board) {
         if (table == null) throw new NullPointerException("table");
         if (board == null) throw new NullPointerException("board");
         this.board = board;
-        this.limit = board.getConfig().getMaxBatchSize();
+        this.batchCount = board.getConfig().getMaxBatchSize();
 
         this.table = table;
         this.prepareQuery = MySQL.prepareQuery(table);
         if (StringUtil.isEmpty(this.prepareQuery)) {
             throw new IllegalStateException("prepareQuery is empty.");
         }
-        this.logs = new ConcurrentLinkedQueue<>();
+        this.logs = newStructQueue();
     }
 
     /**
@@ -88,53 +100,71 @@ public class Struct {
         }
     }
 
+    /**
+     * Add a log to queue.
+     *
+     * @param params
+     */
     public void add(String[] params) {
+        if (params == null) {
+            return;
+        }
         logs.add(params);
         long count = logsSize.incrementAndGet();
-        if (count >= limit) {
-            record(limit);
+        if (count >= batchCount) {
+            record(batchCount);
         }
     }
 
-    public void addAll(Collection<String[]> params) {
-        long count = 0;
+    public void addAll(final Collection<String[]> params) {
+        if (params == null) {
+            return;
+        }
+        final int paramsSize = params.size();
+        if (paramsSize < 0) {
+            return;
+        }
+        long size = logsSize.get();
+        if (size + paramsSize > threshold()) {
+            if (LOG.isInfoEnabled()) {
+                for (String[] param : params) {
+                    LOG.info("Queue is full. drop log : " + StringUtil.implode(param, '|'));
+                }
+            }
+            LOG.warn("Queue is full. drop extra elements.");
+            return;
+        }
         for (String[] param : params) {
             logs.add(param);
-            count = logsSize.incrementAndGet();
         }
-        if (count >= limit) {
-            record(limit);
-        }
-    }
-
-    public void addAll(String[]... params) {
-        long count = 0;
-        for (String[] param : params) {
-            logs.add(param);
-            count = logsSize.incrementAndGet();
-        }
-        if (count >= limit) {
-            record(limit);
+        long length = logsSize.addAndGet(paramsSize);
+        if (length >= batchCount) {
+            record(batchCount);
         }
     }
 
+    /**
+     * Record all log in queue.
+     */
     public void recordAll() {
         record(-1);
     }
 
     /**
      * Record special count log.
-     * if limit number less than 0, will record all log.
+     * if batchCount number less than 0, will record all log.
+     *
      * @param limit The record count.
      */
     public void record(int limit) {
-        if (isWriting)
+        if (writing)
             return;
-        isWriting = true;
+        writing = true;
         List<String[]> list = new ArrayList<>();
         String[] params;
         while ((params = logs.poll()) != null) {
             list.add(params);
+            logsSize.decrementAndGet();
             if (limit > 0 && list.size() >= limit) {
                 break;
             }
@@ -142,7 +172,25 @@ public class Struct {
         if (!list.isEmpty()) {
             board.publish(this, list);
         }
-        isWriting = false;
+        writing = false;
+    }
+
+    /**
+     * Create new log params queue.
+     *
+     * @return Return new {@link Queue}.
+     */
+    protected Queue<String[]> newStructQueue() {
+        return new ConcurrentLinkedQueue<>();
+    }
+
+    /**
+     * Get The threshold value of the logs queue's max length.
+     *
+     * @return The threshold value of the logs queue's max length.
+     */
+    protected int threshold() {
+        return threshold;
     }
 
     public Table getTable() {
@@ -169,11 +217,11 @@ public class Struct {
         this.board = board;
     }
 
-    public int getLimit() {
-        return limit;
+    public int getBatchCount() {
+        return batchCount;
     }
 
-    public void setLimit(int limit) {
-        this.limit = limit;
+    public void setBatchCount(int batchCount) {
+        this.batchCount = batchCount;
     }
 }
