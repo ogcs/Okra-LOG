@@ -6,3 +6,7 @@
 target/*
 *.class
 out/*
+
+
+lib/*
+logs/*
