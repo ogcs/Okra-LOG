@@ -21,7 +21,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.DatagramChannel;
 import org.ogcs.log.core.handler.IpFilter;
-import org.ogcs.log.core.handler.IpFilterHandler;
+import org.ogcs.log.core.handler.UdpFilterHandler;
 import org.ogcs.log.core.handler.LogRecordHandler;
 import org.ogcs.netty.impl.UdpProtocol;
 
@@ -52,7 +52,7 @@ public class OkraLogServer extends UdpProtocol {
             @Override
             protected void initChannel(DatagramChannel ch) throws Exception {
                 ChannelPipeline cp = ch.pipeline();
-                cp.addLast("ipFilter", new IpFilterHandler(ipFilter));
+                cp.addLast("ipFilter", new UdpFilterHandler(ipFilter));
                 cp.addLast("handler", new LogRecordHandler(board));
             }
         };

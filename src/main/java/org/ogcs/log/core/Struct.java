@@ -121,7 +121,7 @@ public class Struct {
             return;
         }
         final int paramsSize = params.size();
-        if (paramsSize < 0) {
+        if (paramsSize <= 0) {
             return;
         }
         long size = logsSize.get();
