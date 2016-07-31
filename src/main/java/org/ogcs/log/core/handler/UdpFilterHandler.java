@@ -16,6 +16,7 @@
 
 package org.ogcs.log.core.handler;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
@@ -28,28 +29,48 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 /**
- * @author TinyZ
- * @date 2016/6/24.
+ * Filter message by host(ip) with UDP protocol.
+ *
+ * @author TinyZ.
+ * @date 2016-06-24.
  */
 @Sharable
-public class IpFilterHandler extends MessageToMessageDecoder<DatagramPacket> {
+public final class UdpFilterHandler extends MessageToMessageDecoder<DatagramPacket> implements FilterHandler<DatagramPacket, String> {
 
-    private static final Logger LOG = LogManager.getLogger(IpFilterHandler.class);
+    private static final Logger LOG = LogManager.getLogger(UdpFilterHandler.class);
 
     private IpFilter filter;
 
-    public IpFilterHandler(IpFilter filter) {
+    public UdpFilterHandler(IpFilter filter) {
         this.filter = filter;
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) throws Exception {
-        InetSocketAddress sender = msg.sender();
-        String host = sender.getHostName();
-        if (filter != null && !filter.accept(host)) {
-            LOG.info("Access denied for IP : [" + host + ":" + sender.getPort() + "]");
+        if (filter(msg)) {
+            InetSocketAddress sender = msg.sender();
+            LOG.info("Access denied for host(IP) : [" + sender.getHostName() + ":" + sender.getPort() + "].");
             return;
         }
-        out.add(msg.content().toString(Charset.forName("UTF-8")));
+        String data = translate(msg);
+        if (data == null) {
+            LOG.info("The message data is null.");
+            return;
+        }
+        out.add(data);
+    }
+
+    @Override
+    public boolean filter(DatagramPacket msg) {
+        return filter != null && !filter.accept(msg.sender().getHostName());
+    }
+
+    @Override
+    public String translate(DatagramPacket msg) {
+        ByteBuf content = msg.content();
+        if (content.readableBytes() <= 0) {
+            return null;
+        }
+        return content.toString(Charset.forName("UTF-8"));
     }
 }

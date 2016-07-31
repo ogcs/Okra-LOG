@@ -176,7 +176,7 @@ public class MissionBoard {
      * Get Okra-LOG config.
      * @return Return custom settings.
      */
-    public OkraConfig getConfig() {
+    public final OkraConfig getConfig() {
         return config;
     }
 }
