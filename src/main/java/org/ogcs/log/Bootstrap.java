@@ -29,7 +29,7 @@ import org.ogcs.log.core.OkraLogServer;
  */
 public class Bootstrap {
 
-    public static final Logger LOG = LogManager.getLogger(Bootstrap.class);
+    private static final Logger LOG = LogManager.getLogger(Bootstrap.class);
 
     public static void main(String[] args) {
         LOG.info("Bootstrap Okra-LOG ...");

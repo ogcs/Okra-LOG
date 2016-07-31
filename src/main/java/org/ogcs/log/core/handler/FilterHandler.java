@@ -28,7 +28,7 @@ public interface FilterHandler<M, O> {
      * Filter message by host.
      *
      * @param msg the client reported message.
-     * @return Return true if server accept host, otherwise false.
+     * @return Return true if server accept message, otherwise false.
      */
     boolean filter(M msg);
 
