@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package org.ogcs.log.core;
+package org.ogcs.log.core.server;
 
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.DatagramChannel;
-import org.ogcs.log.core.handler.IpFilter;
-import org.ogcs.log.core.handler.UdpFilterHandler;
+import org.ogcs.log.core.MissionBoard;
+import org.ogcs.log.core.handler.IpMatcher;
+import org.ogcs.log.core.handler.UdpFilter;
 import org.ogcs.log.core.handler.LogRecordHandler;
 import org.ogcs.netty.impl.UdpProtocol;
 
@@ -31,19 +32,19 @@ import org.ogcs.netty.impl.UdpProtocol;
  * @author TinyZ.
  * @date 2016-07-05.
  */
-public class OkraLogServer extends UdpProtocol {
+public class UdpLogServer extends UdpProtocol {
 
     private MissionBoard board;
-    private IpFilter ipFilter;
+    private IpMatcher ipMatcher;
 
-    public OkraLogServer(int port, MissionBoard board) {
+    public UdpLogServer(int port, MissionBoard board) {
         this(port, board, null);
     }
 
-    public OkraLogServer(int port, MissionBoard board, IpFilter filter) {
+    public UdpLogServer(int port, MissionBoard board, IpMatcher filter) {
         super(port);
         this.board = board;
-        this.ipFilter = filter;
+        this.ipMatcher = filter;
     }
 
     @Override
@@ -52,7 +53,7 @@ public class OkraLogServer extends UdpProtocol {
             @Override
             protected void initChannel(DatagramChannel ch) throws Exception {
                 ChannelPipeline cp = ch.pipeline();
-                cp.addLast("ipFilter", new UdpFilterHandler(ipFilter));
+                cp.addLast("ipMatcher", new UdpFilter(ipMatcher));
                 cp.addLast("handler", new LogRecordHandler(board));
             }
         };

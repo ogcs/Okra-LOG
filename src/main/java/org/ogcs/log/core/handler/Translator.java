@@ -17,20 +17,12 @@
 package org.ogcs.log.core.handler;
 
 /**
- * Filter reported message.
+ * Translate reported message to java bean.
  *
  * @author TinyZ.
- * @date 2016-07-31.
+ * @since 1.0
  */
-public interface FilterHandler<M, O> {
-
-    /**
-     * Filter message by host.
-     *
-     * @param msg the client reported message.
-     * @return Return true if server accept message, otherwise false.
-     */
-    boolean filter(M msg);
+public interface Translator<M, O> {
 
     /**
      * Translate client reported message to object.

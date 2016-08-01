@@ -31,7 +31,7 @@ public class LogRevMain {
 
     public static void main(String[] args) throws IOException {
         // 启动测试服务器
-//        OkraLogServer server = new OkraLogServer(9005, null);
+//        UdpLogServer server = new UdpLogServer(9005, null);
 //        server.start();
 //        server.udpChannel();
 //        try {
