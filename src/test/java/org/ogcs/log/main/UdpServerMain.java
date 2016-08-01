@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ogcs.log;
+package org.ogcs.log.main;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,11 +25,11 @@ import org.ogcs.log.core.server.UdpLogServer;
 
 /**
  * @author TinyZ
- * @date 2016-07-03.
+ * @date 2016-08-01.
  */
-public class Bootstrap {
+public class UdpServerMain {
 
-    private static final Logger LOG = LogManager.getLogger(Bootstrap.class);
+    private static final Logger LOG = LogManager.getLogger(UdpServerMain.class);
 
     public static void main(String[] args) {
         LOG.info("Bootstrap Okra-LOG ...");

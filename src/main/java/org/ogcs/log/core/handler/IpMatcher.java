@@ -20,12 +20,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Simple IP filter. Use to filter report log info.
+ * Simple IP matcher. Use to filter report log info.
  *
  * @author TinyZ
- * @date 2016-07-05.
+ * @since 1.0
  */
-public class IpFilter {
+public class IpMatcher {
 
     private static final boolean DEFAULT_ACCEPT = true;
     /**
@@ -35,11 +35,11 @@ public class IpFilter {
 
     private Map<String /* host */, Boolean /* accept */> filter;
 
-    public IpFilter() {
+    public IpMatcher() {
         this(new ConcurrentHashMap<>(), DEFAULT_ACCEPT);
     }
 
-    public IpFilter(Map<String, Boolean> filter, boolean nuAccept) {
+    public IpMatcher(Map<String, Boolean> filter, boolean nuAccept) {
         this.filter = filter;
         this.nuAccept = nuAccept;
     }

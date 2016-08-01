@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
+package org.ogcs.log.core.handler;
+
 /**
- * Okra-LOG.
- * 
- * 项目源自于非开源项目tlog日志系统. 自研实现一套兼容的方案
+ * Filter reported message.
  *
  * @author TinyZ.
- * @date 2016/6/23
+ * @since 1.0
  */
-package org.ogcs.log;
+public interface Filter<F> {
+
+    /**
+     * Filter message by host.
+     *
+     * @param filter the filter params.
+     * @return Return true if server accept message, otherwise false.
+     */
+    boolean filter(F filter);
+}

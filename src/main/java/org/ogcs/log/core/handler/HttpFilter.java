@@ -19,8 +19,8 @@ package org.ogcs.log.core.handler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.handler.codec.http.FullHttpRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,26 +29,28 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 /**
- * Filter message by host(ip) with UDP protocol.
+ * HTTP protocol filter.
  *
  * @author TinyZ.
- * @date 2016-06-24.
+ * @since 1.0
  */
 @Sharable
-public final class UdpFilterHandler extends MessageToMessageDecoder<DatagramPacket> implements FilterHandler<DatagramPacket, String> {
+public final class HttpFilter
+        extends MessageToMessageDecoder<FullHttpRequest>
+        implements Filter<ChannelHandlerContext>, Translator<FullHttpRequest, String> {
 
-    private static final Logger LOG = LogManager.getLogger(UdpFilterHandler.class);
+    private static final Logger LOG = LogManager.getLogger(HttpFilter.class);
 
-    private IpFilter filter;
+    private IpMatcher filter;
 
-    public UdpFilterHandler(IpFilter filter) {
+    public HttpFilter(IpMatcher filter) {
         this.filter = filter;
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) throws Exception {
-        if (filter(msg)) {
-            InetSocketAddress sender = msg.sender();
+    protected void decode(ChannelHandlerContext ctx, FullHttpRequest msg, List<Object> out) throws Exception {
+        if (filter(ctx)) {
+            InetSocketAddress sender = (InetSocketAddress)ctx.channel().remoteAddress();
             LOG.info("Access denied for host(IP) : [" + sender.getHostName() + ":" + sender.getPort() + "].");
             return;
         }
@@ -61,12 +63,13 @@ public final class UdpFilterHandler extends MessageToMessageDecoder<DatagramPack
     }
 
     @Override
-    public boolean filter(DatagramPacket msg) {
-        return filter != null && !filter.accept(msg.sender().getHostName());
+    public boolean filter(ChannelHandlerContext ctx) {
+        InetSocketAddress address = (InetSocketAddress) ctx.channel().remoteAddress();
+        return filter != null && !filter.accept(address.getHostName());
     }
 
     @Override
-    public String translate(DatagramPacket msg) {
+    public String translate(FullHttpRequest msg) {
         ByteBuf content = msg.content();
         if (content.readableBytes() <= 0) {
             return null;
