@@ -42,8 +42,7 @@ public class LogRecordHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-        if (LOG.isInfoEnabled())
-            LOG.info("Report Log : " + msg);
+
         if (missions == null) {
             return;
         }
