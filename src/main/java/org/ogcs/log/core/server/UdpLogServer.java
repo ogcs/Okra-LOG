@@ -22,7 +22,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.DatagramChannel;
 import org.ogcs.log.core.MissionBoard;
 import org.ogcs.log.core.handler.IpMatcher;
-import org.ogcs.log.core.handler.UdpFilter;
+import org.ogcs.log.core.handler.UdpProtocolHandler;
 import org.ogcs.log.core.handler.LogRecordHandler;
 import org.ogcs.netty.impl.UdpProtocol;
 
@@ -53,7 +53,7 @@ public class UdpLogServer extends UdpProtocol {
             @Override
             protected void initChannel(DatagramChannel ch) throws Exception {
                 ChannelPipeline cp = ch.pipeline();
-                cp.addLast("ipMatcher", new UdpFilter(ipMatcher));
+                cp.addLast("ipMatcher", new UdpProtocolHandler(ipMatcher));
                 cp.addLast("handler", new LogRecordHandler(board));
             }
         };

@@ -23,7 +23,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import org.ogcs.log.core.MissionBoard;
-import org.ogcs.log.core.handler.HttpFilter;
+import org.ogcs.log.core.handler.HttpProtocolHandler;
 import org.ogcs.log.core.handler.IpMatcher;
 import org.ogcs.log.core.handler.LogRecordHandler;
 import org.ogcs.netty.impl.TcpProtocolServer;
@@ -57,7 +57,7 @@ public class HttpLogServer extends TcpProtocolServer {
                 ChannelPipeline cp = ch.pipeline();
                 cp.addLast("codec", new HttpServerCodec());
                 cp.addLast("aggregator", new HttpObjectAggregator(1048576));
-                cp.addLast("ipMatcher", new HttpFilter(ipMatcher));
+                cp.addLast("ipMatcher", new HttpProtocolHandler(ipMatcher));
                 cp.addLast("handler", new LogRecordHandler(board));
             }
         };

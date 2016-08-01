@@ -19,38 +19,40 @@ package org.ogcs.log.core.handler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.QueryStringDecoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Filter message by host(ip) with UDP protocol.
+ * HTTP protocol matcher.
  *
  * @author TinyZ.
- * @date 2016-06-24.
+ * @since 1.0
  */
 @Sharable
-public final class UdpFilter
-        extends MessageToMessageDecoder<DatagramPacket>
-        implements Filter<DatagramPacket>, Translator<DatagramPacket, String> {
+public final class HttpProtocolHandler
+        extends MessageToMessageDecoder<FullHttpRequest>
+        implements Filter<ChannelHandlerContext>, Translator<FullHttpRequest, String> {
 
-    private static final Logger LOG = LogManager.getLogger(UdpFilter.class);
+    private static final Logger LOG = LogManager.getLogger(HttpProtocolHandler.class);
 
     private IpMatcher matcher;
 
-    public UdpFilter(IpMatcher matcher) {
+    public HttpProtocolHandler(IpMatcher matcher) {
         this.matcher = matcher;
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) throws Exception {
-        if (filter(msg)) {
-            InetSocketAddress sender = msg.sender();
+    protected void decode(ChannelHandlerContext ctx, FullHttpRequest msg, List<Object> out) throws Exception {
+        if (filter(ctx)) {
+            InetSocketAddress sender = (InetSocketAddress)ctx.channel().remoteAddress();
             LOG.info("Access denied for host(IP) : [" + sender.getHostName() + ":" + sender.getPort() + "].");
             return;
         }
@@ -63,16 +65,22 @@ public final class UdpFilter
     }
 
     @Override
-    public boolean filter(DatagramPacket msg) {
-        return matcher != null && !matcher.accept(msg.sender().getHostName());
+    public boolean filter(ChannelHandlerContext ctx) {
+        InetSocketAddress address = (InetSocketAddress) ctx.channel().remoteAddress();
+        return matcher != null && !matcher.accept(address.getHostName());
     }
 
     @Override
-    public String translate(DatagramPacket msg) {
-        ByteBuf content = msg.content();
-        if (content.readableBytes() <= 0) {
+    public String translate(FullHttpRequest msg) {
+        String data = msg.uri();
+        int index = data.indexOf("?");
+        if (index < 0) {
             return null;
         }
-        return content.toString(Charset.forName("UTF-8"));
+        String params = data.substring(index + 1, data.length());
+        if (params.length() <= 0) {
+            return null;
+        }
+        return data;
     }
 }
