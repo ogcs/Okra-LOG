@@ -16,19 +16,15 @@
 
 package org.ogcs.log.core.handler;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.QueryStringDecoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Map;
 
 /**
  * HTTP protocol matcher.
@@ -52,7 +48,7 @@ public final class HttpProtocolHandler
     @Override
     protected void decode(ChannelHandlerContext ctx, FullHttpRequest msg, List<Object> out) throws Exception {
         if (filter(ctx)) {
-            InetSocketAddress sender = (InetSocketAddress)ctx.channel().remoteAddress();
+            InetSocketAddress sender = (InetSocketAddress) ctx.channel().remoteAddress();
             LOG.info("Access denied for host(IP) : [" + sender.getHostName() + ":" + sender.getPort() + "].");
             return;
         }

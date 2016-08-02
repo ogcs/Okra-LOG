@@ -47,8 +47,8 @@ public class ApiHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     public ApiHandler() {
     }
 
-    public static void register(String path, ApiServlet servlet) {
-        SERVLETS.put(path, servlet);
+    public static void register(ApiServlet servlet) {
+        SERVLETS.put(servlet.path(), servlet);
     }
 
     @Override

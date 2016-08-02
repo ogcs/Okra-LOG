@@ -4,8 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ogcs.log.config.OkraConfig;
 import org.ogcs.log.config.OkraProperties;
-import org.ogcs.log.core.server.HttpLogServer;
 import org.ogcs.log.core.MissionBoard;
+import org.ogcs.log.core.server.HttpLogServer;
 import org.ogcs.log.serlvet.ApiHandler;
 import org.ogcs.log.serlvet.impl.AdminServlet;
 
@@ -13,8 +13,8 @@ import org.ogcs.log.serlvet.impl.AdminServlet;
  * @author TinyZ
  * @date 2016-08-01.
  */
-public class HttpServerMain {
-    private static final Logger LOG = LogManager.getLogger(HttpServerMain.class);
+public class HttpApiMain {
+    private static final Logger LOG = LogManager.getLogger(HttpApiMain.class);
 
     public static void main(String[] args) {
         LOG.info("Bootstrap Okra-LOG ...");

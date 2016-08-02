@@ -10,6 +10,8 @@ import io.netty.handler.codec.http.HttpResponse;
  */
 public interface ApiServlet {
 
+    String path();
+
     HttpResponse doGet(HttpRequest request);
 
     HttpResponse doPost(HttpRequest request);
