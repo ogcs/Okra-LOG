@@ -22,6 +22,7 @@ import org.ogcs.log.config.OkraConfig;
 import org.ogcs.log.config.OkraProperties;
 import org.ogcs.log.core.MissionBoard;
 import org.ogcs.log.core.server.UdpLogServer;
+import org.ogcs.log.serlvet.ApiServer;
 
 /**
  * @author TinyZ
@@ -34,6 +35,7 @@ public class Bootstrap {
     public static void main(String[] args) {
         LOG.info("Bootstrap Okra-LOG ...");
         UdpLogServer server = null;
+        ApiServer apiServer = null;
         try {
             OkraConfig config = OkraProperties.getConfig();
             MissionBoard missionBoard = new MissionBoard(config);
@@ -41,10 +43,15 @@ public class Bootstrap {
 
             server = new UdpLogServer(config.getPort(), missionBoard);
             server.start();
+
+            apiServer = new ApiServer(9006);
+            apiServer.start();
             LOG.info("Okra-LOG bootstrap success.");
         } catch (Exception e) {
             if (server != null)
                 server.stop();
+            if (apiServer != null)
+                apiServer.stop();
             LOG.info("Okra-LOG bootstrap failure.", e);
         }
     }
