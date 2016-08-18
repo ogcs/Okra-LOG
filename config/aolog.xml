@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <okra-log xmlns="http://tinyzzh.github.io/schema/okra-log" version="1.0">
 
-    <table name="log_money" desc="货币变更日志表">
+    <table name="log_money" desc="货币变更日志表" suffix="DATE">
         <field name="logDate" type="DATETIME" desc="格式 YYYY-MM-DD HH:MM:SS"/>
         <field name="openId" type="VARCHAR" length="50" isPrimaryKey="true"/>
 

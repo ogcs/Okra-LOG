@@ -69,6 +69,7 @@
         <xsd:attribute name="collate" type="StrName" default="utf8_general_ci"/>
         <xsd:attribute name="incr" type="xsd:int" default="0"/>
         <xsd:attribute name="desc" type="xsd:string"/>
+        <xsd:attribute name="suffix" type="TableNameSuffixEnum"/>
     </xsd:attributeGroup>
 
     <xsd:attributeGroup name="MySQLFieldAttribute">
@@ -145,6 +146,15 @@
             <xsd:enumeration value="MEDIUMTEXT"/>
             <xsd:enumeration value="LONGBLOB"/>
             <xsd:enumeration value="LONGTEXT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="TableNameSuffixEnum">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ 数据库表名后缀. 示例: t_log_xxx_2016-08-16 ]]></xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="DATE"/>
+            <xsd:enumeration value="STRING"/>
         </xsd:restriction>
     </xsd:simpleType>
 </xsd:schema>
