@@ -16,6 +16,8 @@
 
 package org.ogcs.log.core.builder;
 
+import java.util.Objects;
+
 /**
  * MySQL table builder.
  *
@@ -31,6 +33,8 @@ public class Table<F extends Field> {
     private String desc;
     private int autoIncrement = 1;
     private F[] fields;
+    //
+    private String suffix;
 
     @Deprecated
     public Table() {
@@ -122,5 +126,36 @@ public class Table<F extends Field> {
 
     public void setFields(F[] fields) {
         this.fields = fields;
+    }
+
+    public String getSuffix() {
+        return suffix;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    @Override
+    public int hashCode() {
+        // TODO:
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj != null && obj instanceof Table){
+            Table var = (Table) obj;
+            return (Objects.equals(this.database, var.database))
+                    && (Objects.equals(this.name, var.name))
+                    && (Objects.equals(this.dbEngine, var.dbEngine))
+                    && (Objects.equals(this.charset, var.charset))
+                    && Objects.equals(this.collate, var.collate)
+                    && Objects.equals(this.desc, var.desc)
+                    && (this.autoIncrement == var.autoIncrement)
+                    && (this.fields == var.fields)
+            ;
+        }
+        return false;
     }
 }
