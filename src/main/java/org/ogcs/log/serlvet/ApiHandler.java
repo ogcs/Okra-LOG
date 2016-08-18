@@ -32,6 +32,7 @@ import java.util.Map;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpResponseStatus.FORBIDDEN;
+import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -54,22 +55,30 @@ public class ApiHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
         QueryStringDecoder decoder = new QueryStringDecoder(msg.uri());
-        ApiServlet servlet = SERVLETS.get(decoder.path());
-        if (servlet == null) {
-            response(ctx, FORBIDDEN);
-            return;
+        switch (decoder.path()) {
+            case "/favicon.ico":
+                response(ctx, NOT_FOUND);
+                break;
+            default: {
+                ApiServlet servlet = SERVLETS.get(decoder.path());
+                if (servlet == null) {
+                    response(ctx, FORBIDDEN);
+                    return;
+                }
+                HttpResponse response;
+                if (msg.method() == HttpMethod.POST) {
+                    response = servlet.doPost(msg);
+                } else {
+                    response = servlet.doGet(msg);
+                }
+                if (response == null) {
+                    response(ctx, BAD_REQUEST);
+                    return;
+                }
+                response(ctx, response);
+                break;
+            }
         }
-        HttpResponse response;
-        if (msg.method() == HttpMethod.POST) {
-            response = servlet.doPost(msg);
-        } else {
-            response = servlet.doGet(msg);
-        }
-        if (response == null) {
-            response(ctx, BAD_REQUEST);
-            return;
-        }
-        response(ctx, response);
     }
 
     private void response(ChannelHandlerContext ctx, HttpResponseStatus status) {
