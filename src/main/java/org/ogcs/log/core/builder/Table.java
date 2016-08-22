@@ -16,6 +16,8 @@
 
 package org.ogcs.log.core.builder;
 
+import org.ogcs.utilities.StringUtil;
+
 import java.util.Objects;
 
 /**
@@ -34,6 +36,7 @@ public class Table<F extends Field> {
     private int autoIncrement = 1;
     private F[] fields;
     //
+    private String prefix;
     private String suffix;
 
     @Deprecated
@@ -62,6 +65,26 @@ public class Table<F extends Field> {
         this.desc = desc;
         this.autoIncrement = autoIncrement;
         this.fields = fields;
+    }
+
+    public String name() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" `");
+        if (!StringUtil.isEmpty(database)) {
+            sb.append(database.toLowerCase()).append("`.`");
+        }
+        if (!StringUtil.isEmpty(prefix)) {
+            sb.append(prefix);
+        }
+        sb.append(name.toLowerCase());
+        if (!StringUtil.isEmpty(suffix)) {
+            if (suffix.toLowerCase().equals("DATE")) {
+
+            } else
+                sb.append(suffix);
+        }
+        sb.append("` ");
+        return sb.toString();
     }
 
     public String getDatabase() {
@@ -144,7 +167,7 @@ public class Table<F extends Field> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj != null && obj instanceof Table){
+        if (obj != null && obj instanceof Table) {
             Table var = (Table) obj;
             return (Objects.equals(this.database, var.database))
                     && (Objects.equals(this.name, var.name))
@@ -154,7 +177,7 @@ public class Table<F extends Field> {
                     && Objects.equals(this.desc, var.desc)
                     && (this.autoIncrement == var.autoIncrement)
                     && (this.fields == var.fields)
-            ;
+                    ;
         }
         return false;
     }
