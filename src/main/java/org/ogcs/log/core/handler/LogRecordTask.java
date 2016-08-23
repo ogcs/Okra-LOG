@@ -20,10 +20,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ogcs.app.Releasable;
 import org.ogcs.log.core.Struct;
+import org.ogcs.log.util.MySQL;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -58,6 +60,14 @@ public final class LogRecordTask implements Releasable {
         PreparedStatement stat = null;
         try {
             conn = struct.getBoard().getConnection();
+
+            if (!struct.tableExist()) {
+                String tableCreateSQL = MySQL.createTableSQL(struct.getTable());
+                Statement statement = conn.createStatement();
+                statement.execute(tableCreateSQL);
+                struct.afterTableExist();
+            }
+
             conn.setAutoCommit(false);
             String query = struct.getPrepareQuery();
             stat = conn.prepareStatement(query);

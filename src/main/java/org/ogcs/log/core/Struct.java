@@ -20,12 +20,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ogcs.log.core.builder.Table;
 import org.ogcs.log.util.MySQL;
+import org.ogcs.log.util.TimeV8Util;
 import org.ogcs.utilities.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -71,6 +69,8 @@ public class Struct {
      * 是否正在写入
      */
     private volatile boolean writing = false;
+
+    private volatile String today;
 
     public Struct(Table table, MissionBoard board) {
         if (table == null) throw new NullPointerException("table");
@@ -173,6 +173,14 @@ public class Struct {
             board.publish(this, list);
         }
         writing = false;
+    }
+
+    public boolean tableExist() {
+        return today.equals(TimeV8Util.date());
+    }
+
+    public void afterTableExist() {
+        today = TimeV8Util.date();
     }
 
     /**

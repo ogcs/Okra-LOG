@@ -16,6 +16,8 @@
 
 package org.ogcs.log.core.builder;
 
+import org.ogcs.log.util.HashCodeUtil;
+import org.ogcs.log.util.TimeV8Util;
 import org.ogcs.utilities.StringUtil;
 
 import java.util.Objects;
@@ -67,6 +69,10 @@ public class Table<F extends Field> {
         this.fields = fields;
     }
 
+    /**
+     * Return database table name.
+     * @return Return database table name.
+     */
     public String name() {
         StringBuilder sb = new StringBuilder();
         sb.append(" `");
@@ -74,12 +80,15 @@ public class Table<F extends Field> {
             sb.append(database.toLowerCase()).append("`.`");
         }
         if (!StringUtil.isEmpty(prefix)) {
-            sb.append(prefix);
+            if (prefix.toLowerCase().equals("DATE")) {
+                sb.append(TimeV8Util.date()).append("_");
+            } else
+                sb.append(prefix);
         }
         sb.append(name.toLowerCase());
         if (!StringUtil.isEmpty(suffix)) {
             if (suffix.toLowerCase().equals("DATE")) {
-
+                sb.append("_").append(TimeV8Util.date());
             } else
                 sb.append(suffix);
         }
@@ -151,18 +160,9 @@ public class Table<F extends Field> {
         this.fields = fields;
     }
 
-    public String getSuffix() {
-        return suffix;
-    }
-
-    public void setSuffix(String suffix) {
-        this.suffix = suffix;
-    }
-
     @Override
     public int hashCode() {
-        // TODO:
-        return super.hashCode();
+        return HashCodeUtil.hashCode(this.database, this.name, this.fields);
     }
 
     @Override
@@ -171,13 +171,7 @@ public class Table<F extends Field> {
             Table var = (Table) obj;
             return (Objects.equals(this.database, var.database))
                     && (Objects.equals(this.name, var.name))
-                    && (Objects.equals(this.dbEngine, var.dbEngine))
-                    && (Objects.equals(this.charset, var.charset))
-                    && Objects.equals(this.collate, var.collate)
-                    && Objects.equals(this.desc, var.desc)
-                    && (this.autoIncrement == var.autoIncrement)
-                    && (this.fields == var.fields)
-                    ;
+                    && (this.fields == var.fields);
         }
         return false;
     }
