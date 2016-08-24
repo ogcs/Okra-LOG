@@ -17,9 +17,11 @@
 package org.ogcs.log.core.builder;
 
 import org.ogcs.log.util.HashCodeUtil;
+import org.ogcs.log.util.MySQL;
 import org.ogcs.log.util.TimeV8Util;
 import org.ogcs.utilities.StringUtil;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -38,8 +40,16 @@ public class Table<F extends Field> {
     private int autoIncrement = 1;
     private F[] fields;
     //
-    private String prefix;
-    private String suffix;
+    private String adorn;   //  后缀类型
+    private String suffix;  //  后缀字符串
+    /**
+     * 记录的数据库表名称
+     */
+    private volatile String logTableName;
+    /**
+     * The table prepare query sql.
+     */
+    private volatile String prepareQuery;
 
     @Deprecated
     public Table() {
@@ -70,7 +80,7 @@ public class Table<F extends Field> {
     }
 
     /**
-     * Return database table name.
+     * Return database table name.  example : `database`.`prefix_table_suffix`
      * @return Return database table name.
      */
     public String name() {
@@ -79,21 +89,40 @@ public class Table<F extends Field> {
         if (!StringUtil.isEmpty(database)) {
             sb.append(database.toLowerCase()).append("`.`");
         }
-        if (!StringUtil.isEmpty(prefix)) {
-            if (prefix.toLowerCase().equals("DATE")) {
-                sb.append(TimeV8Util.date()).append("_");
-            } else
-                sb.append(prefix);
-        }
         sb.append(name.toLowerCase());
         if (!StringUtil.isEmpty(suffix)) {
-            if (suffix.toLowerCase().equals("DATE")) {
-                sb.append("_").append(TimeV8Util.date());
-            } else
-                sb.append(suffix);
+            sb.append("_");
+            appendAdorn(sb, this.adorn, this.suffix);
         }
         sb.append("` ");
         return sb.toString();
+    }
+
+    private void appendAdorn(StringBuilder sb, String adorn, String pattern) {
+        switch(adorn) {
+            case "DATE":
+                sb.append(TimeV8Util.dateTime(LocalDateTime.now(), pattern));
+                break;
+            default:
+                sb.append(pattern);
+                break;
+        }
+    }
+
+    public boolean tableExist() {
+        return logTableName != null && logTableName.equals(name());
+    }
+
+    public void afterTableExist() {
+        this.logTableName = name();
+        this.prepareQuery = MySQL.prepareQuery(this);
+    }
+
+    /**
+     * @return prepare query SQL.
+     */
+    public String prepareQuery() {
+        return prepareQuery;
     }
 
     public String getDatabase() {

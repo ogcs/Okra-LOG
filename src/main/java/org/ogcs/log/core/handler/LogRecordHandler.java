@@ -54,7 +54,7 @@ public class LogRecordHandler extends SimpleChannelInboundHandler<String> {
             return;
         }
         if (table.getFields().length + 1 != split.length) {
-            LOG.error("[msg] log param element size is [" + split.length + "]. Field size is [ " + split.length + " ], msg : " + msg);
+            LOG.error("[msg] log param element size(" + split.length + ") less than Fields size(" + (table.getFields().length + 1) + "), msg : " + msg);
             return;
         }
         missions.add(split[0], split);

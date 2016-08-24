@@ -42,11 +42,30 @@ public class TimeV8Util {
         return date.format(DATE_FORMATTER);
     }
 
+    public static String date(LocalDate date, String pattern) {
+        return date.format(DateTimeFormatter.ofPattern(pattern));
+    }
+
     public static String dateTime() {
         return dateTime(LocalDateTime.now());
     }
 
     public static String dateTime(LocalDateTime dateTime) {
         return dateTime.format(DATE_TIME_FORMATTER);
+    }
+
+    public static String dateTime(LocalDateTime dateTime, String pattern) {
+        return dateTime.format(DateTimeFormatter.ofPattern(pattern));
+    }
+
+    public static void main(String[] args) {
+        LocalDateTime now = LocalDateTime.now();
+        String s1 = dateTime(now);
+
+//        now.with(TemporalAdjusters.firstInMonth(DayOfWeek.of()))
+
+        LocalDateTime localDateTime = now.plusDays(1);
+        String s2 = dateTime(localDateTime);
+        System.out.println();
     }
 }

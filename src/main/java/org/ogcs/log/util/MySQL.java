@@ -187,7 +187,7 @@ public final class MySQL {
             sbValues.insert(0, " (").append(")");
         }
         return new StringBuilder("INSERT INTO ")
-                .append(tableName(table.getDatabase(), table.getName()))
+                .append(table.name())
                 .append(sbColumn)
                 .append(" VALUES ")
                 .append(sbValues)
@@ -235,7 +235,7 @@ public final class MySQL {
                 if (valuesBuilder.length() > 0) {
                     valuesBuilder.insert(0, " VALUES (").append(")");
                     return String.valueOf(new StringBuilder("INSERT INTO ")
-                            .append(tableName(table.getDatabase(), table.getName()))
+                            .append(table.name())
                             .append(columnBuilder)
                             .append(valuesBuilder)
                             .append(";"));
@@ -280,6 +280,16 @@ public final class MySQL {
         }
     }
 
+    public static String showTableStatusSQL(Table table) {
+        String name = table.name();
+        int index = name.indexOf("`.`");
+        if (index > 0) {
+            return StringUtil.concatenate("SHOW TABLE STATUS LIKE '", name, "';");
+        } else {
+            return StringUtil.concatenate("SHOW TABLE STATUS FROM `", name.substring(0, index + 1), "` LIKE '", name.substring(index + 2), "';");
+        }
+    }
+
     /**
      * [MySQL] show full fields from table.
      * <pre>
@@ -288,6 +298,14 @@ public final class MySQL {
      */
     public static String showFullFieldSQL(String database, String tableName) {
         return StringUtil.concatenate("SHOW FULL FIELDS FROM ", tableName(database, tableName), ";");
+    }
+
+    public static String showFullFieldSQL(String tableName) {
+        return StringUtil.concatenate("SHOW FULL FIELDS FROM ", tableName, ";");
+    }
+
+    public static String showFullFieldSQL(Table table) {
+        return showFullFieldSQL(table.name());
     }
 
     public static String numericOrString(String dataType, String value) {
@@ -313,13 +331,7 @@ public final class MySQL {
             return null;
         }
         StringBuilder builder = new StringBuilder();
-        builder.append("CREATE TABLE IF NOT EXISTS `");
-        if (StringUtil.isEmpty(table.getDatabase())) {
-            builder.append(table.getName().toLowerCase());
-        } else {
-            builder.append(table.getDatabase().toLowerCase()).append("`.`").append(table.getName().toLowerCase());
-        }
-        builder.append("` (\n");
+        builder.append("CREATE TABLE IF NOT EXISTS ").append(table.name()).append(" (\n");
         Field[] fields = table.getFields();
         StringBuilder priBuilder = null;
         for (int i = 0; i < fields.length; i++) {
