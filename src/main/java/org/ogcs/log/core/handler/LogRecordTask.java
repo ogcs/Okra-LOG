@@ -20,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ogcs.app.Releasable;
 import org.ogcs.log.core.Struct;
+import org.ogcs.log.core.builder.Table;
 import org.ogcs.log.util.MySQL;
 
 import java.sql.Connection;
@@ -60,31 +61,28 @@ public final class LogRecordTask implements Releasable {
         PreparedStatement stat = null;
         try {
             conn = struct.getBoard().getConnection();
-
-            if (!struct.tableExist()) {
-                String tableCreateSQL = MySQL.createTableSQL(struct.getTable());
+            Table table = struct.getTable();
+            //  check table is exist.
+            if (!table.tableExist()) {
+                String tableCreateSQL = MySQL.createTableSQL(table);
                 Statement statement = conn.createStatement();
                 statement.execute(tableCreateSQL);
-                struct.afterTableExist();
+                table.afterTableExist();
             }
-
+            //  record log data.
             conn.setAutoCommit(false);
-            String query = struct.getPrepareQuery();
+            String query = table.prepareQuery();
             stat = conn.prepareStatement(query);
-            int filedSize = struct.getTable().getFields().length + 1; // 从1开始计数
+            int lastIndex = table.getFields().length + 1;
             for (String[] params : list) {
                 for (int i = 1; i < params.length; i++) {
                     stat.setObject(i, params[i]);
                 }
-                if (filedSize > params.length) { // 补全SQL中缺少的参数为null  // TODO: 当params少的时候，是否会出现问题？
-                    for (int j = params.length; j < filedSize; j++) {
+                if (lastIndex > params.length) { // 补全SQL中缺少的参数为null
+                    for (int j = params.length; j < lastIndex; j++) {
                         stat.setObject(j, null);
                     }
                 }
-//                int len = Math.min(struct.getTable().getFields().length, params.length);
-//                for (int i = 1; i < len; i++) {
-//                    stat.setObject(i, params[i]);
-//                }
                 stat.addBatch();
             }
             stat.executeBatch();

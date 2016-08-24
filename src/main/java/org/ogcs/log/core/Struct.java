@@ -19,11 +19,12 @@ package org.ogcs.log.core;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ogcs.log.core.builder.Table;
-import org.ogcs.log.util.MySQL;
-import org.ogcs.log.util.TimeV8Util;
 import org.ogcs.utilities.StringUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -41,10 +42,6 @@ public class Struct {
      * MySQL table builder.
      */
     protected Table table;
-    /**
-     * The table prepare query sql.
-     */
-    protected String prepareQuery;
     /**
      * The mission board.
      */
@@ -70,8 +67,6 @@ public class Struct {
      */
     private volatile boolean writing = false;
 
-    private volatile String today;
-
     public Struct(Table table, MissionBoard board) {
         if (table == null) throw new NullPointerException("table");
         if (board == null) throw new NullPointerException("board");
@@ -79,10 +74,6 @@ public class Struct {
         this.batchCount = board.getConfig().getMaxBatchSize();
 
         this.table = table;
-        this.prepareQuery = MySQL.prepareQuery(table);
-        if (StringUtil.isEmpty(this.prepareQuery)) {
-            throw new IllegalStateException("prepareQuery is empty.");
-        }
         this.logs = newStructQueue();
     }
 
@@ -94,10 +85,6 @@ public class Struct {
     public synchronized void update(Table table) {
         if (table == null) throw new NullPointerException("table");
         this.table = table;
-        this.prepareQuery = MySQL.prepareQuery(table);
-        if (StringUtil.isEmpty(this.prepareQuery)) {
-            throw new IllegalStateException("prepareQuery is empty.");
-        }
     }
 
     /**
@@ -175,14 +162,6 @@ public class Struct {
         writing = false;
     }
 
-    public boolean tableExist() {
-        return today.equals(TimeV8Util.date());
-    }
-
-    public void afterTableExist() {
-        today = TimeV8Util.date();
-    }
-
     /**
      * Create new log params queue.
      *
@@ -207,14 +186,6 @@ public class Struct {
 
     public void setTable(Table table) {
         this.table = table;
-    }
-
-    public String getPrepareQuery() {
-        return prepareQuery;
-    }
-
-    public void setPrepareQuery(String prepareQuery) {
-        this.prepareQuery = prepareQuery;
     }
 
     public MissionBoard getBoard() {
