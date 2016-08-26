@@ -17,7 +17,8 @@
 package org.ogcs.log.util;
 
 /**
- * @author TinyZ
+ * Hash code utilities
+ * @author TinyZ.
  * @since 1.0
  */
 public class HashCodeUtil {
@@ -114,13 +115,4 @@ public class HashCodeUtil {
         }
         return total;
     }
-
-
-    public static void main(String[] args) {
-
-        int var1 = hashCode("xx", new int[]{1}, true);
-        int var2 = hashCode("xx", new int[]{1}, true);
-        System.out.println();
-    }
-
 }
