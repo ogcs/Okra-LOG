@@ -21,6 +21,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
+ * 日期时间工具
+ *
+ * <p>基于JDK 1.8</p>
+ *
  * @author TinyZ
  * @since 1.0
  */
@@ -56,16 +60,5 @@ public class TimeV8Util {
 
     public static String dateTime(LocalDateTime dateTime, String pattern) {
         return dateTime.format(DateTimeFormatter.ofPattern(pattern));
-    }
-
-    public static void main(String[] args) {
-        LocalDateTime now = LocalDateTime.now();
-        String s1 = dateTime(now);
-
-//        now.with(TemporalAdjusters.firstInMonth(DayOfWeek.of()))
-
-        LocalDateTime localDateTime = now.plusDays(1);
-        String s2 = dateTime(localDateTime);
-        System.out.println();
     }
 }
