@@ -5,8 +5,8 @@
 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
             attributeFormDefault="unqualified"
-            targetNamespace="http://tinyzzh.github.io/schema/okra-log"
-            xmlns="http://tinyzzh.github.io/schema/okra-log"
+            targetNamespace="http://tinyzzh.github.io/schema/okra-log-config"
+            xmlns="http://tinyzzh.github.io/schema/okra-log-config"
         >
     <xsd:element name="okra-log-config">
         <xsd:complexType>

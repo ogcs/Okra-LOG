@@ -65,9 +65,12 @@ public final class LogRecordTask implements Releasable {
             //  check table is exist.
             if (!table.tableExist()) {
                 String tableCreateSQL = MySQL.createTableSQL(table);
-                Statement statement = conn.createStatement();
-                statement.execute(tableCreateSQL);
-                table.afterTableExist();
+                try (Statement statement = conn.createStatement()) {
+                    statement.execute(tableCreateSQL);
+                    table.afterTableExist();
+                } catch (Exception e) {
+                    LOG.error("SQL ERROR : " + tableCreateSQL);
+                }
             }
             //  record log data.
             conn.setAutoCommit(false);
