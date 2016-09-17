@@ -24,7 +24,7 @@ public class HttpServerMain {
             MissionBoard missionBoard = new MissionBoard(config);
             missionBoard.init();
 
-            ApiHandler.register(new AdminServlet());
+            ApiHandler.register("/api.action", new AdminServlet());
 
             server = new HttpLogServer(config.getPort(), missionBoard);
             server.start();
