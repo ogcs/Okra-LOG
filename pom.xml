@@ -88,6 +88,12 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/okra-all.jar</systemPath>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.14</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
 
