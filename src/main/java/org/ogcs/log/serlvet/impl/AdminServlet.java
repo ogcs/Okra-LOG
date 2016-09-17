@@ -1,26 +1,19 @@
 package org.ogcs.log.serlvet.impl;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.*;
-import org.ogcs.log.serlvet.ApiServlet;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
+import org.ogcs.log.serlvet.AbstractApiServlet;
 
 /**
  * @author TinyZ
  * @date 2016-08-02.
  */
-public class AdminServlet implements ApiServlet {
-
-    @Override
-    public String path() {
-        return "/api.action";
-    }
+public class AdminServlet extends AbstractApiServlet {
 
     @Override
     public HttpResponse doGet(HttpRequest request) {
         System.out.println(request.uri());
-        ByteBuf byteBuf = Unpooled.copiedBuffer("{state:0}".getBytes());
-        return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, byteBuf);
+        return response(0);
     }
 
     @Override
