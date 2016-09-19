@@ -2,7 +2,8 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <script type="text/javascript" src="./scripts/echarts3/echarts.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/dist/echarts.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/asset/theme/vintage.js"></script>
 </head>
 <body>
 <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
@@ -10,16 +11,16 @@
 
 <script type="text/javascript">
     // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main'));
+    var myChart = echarts.init(document.getElementById('main'), 'vintage');
 
     // 异步加载显示数据
-    $.get("").done(function (data) {
-        myChart.setOption({
-            title: {
-                text : "标题"
-            }
-        });
-    });
+//    $.get("").done(function (data) {
+//        myChart.setOption({
+//            title: {
+//                text : "标题"
+//            }
+//        });
+//    });
 
     // 指定图表的配置项和数据
     var option = {

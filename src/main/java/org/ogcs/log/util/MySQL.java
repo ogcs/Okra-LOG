@@ -85,6 +85,10 @@ public final class MySQL {
                             builder.setFields(fields);
                         }
                     }
+                    // 3. Index information
+                    if (stat.execute(showIndexSQL(database, tableName))) {
+
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -288,6 +292,10 @@ public final class MySQL {
         } else {
             return StringUtil.concatenate("SHOW TABLE STATUS FROM `", name.substring(0, index + 1), "` LIKE '", name.substring(index + 2), "';");
         }
+    }
+
+    public static String showIndexSQL(String database, String tableName) {
+        return StringUtil.concatenate("SHOW INDEX FROM ", tableName(database, tableName), ";");
     }
 
     /**

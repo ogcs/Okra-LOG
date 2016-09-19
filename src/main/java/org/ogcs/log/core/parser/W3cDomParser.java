@@ -19,6 +19,7 @@ package org.ogcs.log.core.parser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ogcs.log.core.builder.Field;
+import org.ogcs.log.core.builder.KeyIndex;
 import org.ogcs.log.core.builder.Table;
 import org.ogcs.log.util.XmlUtil;
 import org.w3c.dom.Document;
@@ -98,12 +99,25 @@ public final class W3cDomParser implements StructParser<Table> {
                 if (table != null) {
                     NodeList nodeListField = nodeTable.getChildNodes();
                     List<F> arrayField = new ArrayList<>();
+                    List<KeyIndex> arrayKeyIndex = new ArrayList<>();
                     for (int j = 0; j < nodeListField.getLength(); j++) {
                         final Node fieldNode = nodeListField.item(j);
-                        if (null != fieldNode && STRUCT_FIELD.equals(fieldNode.getNodeName())) {
-                            final F f = initObj(clzOfField, fieldNode.getAttributes());
-                            if (f != null) {
-                                arrayField.add(f);
+                        if (null != fieldNode) {
+                            if (STRUCT_FIELD.equals(fieldNode.getNodeName())) {
+                                final F f = initObj(clzOfField, fieldNode.getAttributes());
+                                if (f != null) {
+                                    arrayField.add(f);
+                                }
+                            } else if (STRUCT_INDEXES.equals(fieldNode.getNodeName())) {
+                                NodeList nodeListIndexes = fieldNode.getChildNodes();
+                                if (nodeListIndexes != null && nodeListIndexes.getLength() > 0) {
+                                    String kiName = fieldNode.getAttributes().getNamedItem("name").getNodeValue();
+                                    String[] columns = new String[nodeListIndexes.getLength()];
+                                    for (int i1 = 0; i1 < nodeListIndexes.getLength(); i1++) {
+                                        columns[i1] = nodeListIndexes.item(i1).getAttributes().getNamedItem("name").getNodeValue();
+                                    }
+                                    arrayKeyIndex.add(new KeyIndex(kiName, columns));
+                                }
                             }
                         }
                     }
@@ -111,6 +125,11 @@ public final class W3cDomParser implements StructParser<Table> {
                         @SuppressWarnings("unchecked")
                         final F[] fAry = (F[]) Array.newInstance(clzOfField, arrayField.size());
                         table.setFields(arrayField.toArray(fAry));
+                    }
+                    if (arrayKeyIndex.size() > 0) {
+                        @SuppressWarnings("unchecked")
+                        final KeyIndex[] fAry = (KeyIndex[]) Array.newInstance(clzOfField, arrayField.size());
+                        table.setIndexes(arrayKeyIndex.toArray(fAry));
                     }
                     tables.put(table.getName().toLowerCase(), table);
                 }

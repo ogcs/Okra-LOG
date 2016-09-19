@@ -14,11 +14,11 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:okra-log="http://tinyzzh.github.io/schema/okra-log"
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:okra-log="http://tinyzzh.github.io/schema/okra-log.xsd"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
-            targetNamespace="http://tinyzzh.github.io/schema/okra-log"
-            xmlns="http://tinyzzh.github.io/schema/okra-log"
+            targetNamespace="http://tinyzzh.github.io/schema/okra-log.xsd"
+            xmlns="http://tinyzzh.github.io/schema/okra-log.xsd"
 >
     <xsd:element name="okra-log">
         <xsd:annotation>
@@ -35,7 +35,7 @@
             </xsd:sequence>
             <xsd:attribute name="version" type="xsd:double" use="required"/>
         </xsd:complexType>
-        <xsd:unique name="tableColumnNameUnique">
+        <xsd:unique name="uniqueTableName">
             <xsd:selector xpath="okra-log:table"/>
             <xsd:field xpath="@name"/>
         </xsd:unique>
@@ -50,6 +50,10 @@
                             <xsd:element ref="index" maxOccurs="unbounded" minOccurs="0"/>
                         </xsd:sequence>
                     </xsd:complexType>
+                    <xsd:unique name="uniqueIndexName">
+                        <xsd:selector xpath="okra-log:index"/>
+                        <xsd:field xpath="@name"/>
+                    </xsd:unique>
                 </xsd:element>
                 <xsd:element name="field" maxOccurs="unbounded">
                     <xsd:complexType>
@@ -59,7 +63,7 @@
             </xsd:sequence>
             <xsd:attributeGroup ref="MySQLTableAttribute"/>
         </xsd:complexType>
-        <xsd:unique name="fieldColumnNameUnique">
+        <xsd:unique name="uniqueFieldName">
             <xsd:selector xpath="okra-log:field"/>
             <xsd:field xpath="@name"/>
         </xsd:unique>
@@ -71,13 +75,18 @@
         </xsd:annotation>
         <xsd:complexType>
             <xsd:sequence>
-                <xsd:element name="field" maxOccurs="unbounded" minOccurs="1">
+                <xsd:element name="column" maxOccurs="unbounded" minOccurs="1">
                     <xsd:complexType>
                         <xsd:attribute name="name" type="StrName" use="required"/>
                     </xsd:complexType>
                 </xsd:element>
             </xsd:sequence>
+            <xsd:attribute name="name" type="StrName" use="required"/>
         </xsd:complexType>
+        <xsd:unique name="uniqueColumnName">
+            <xsd:selector xpath="okra-log:column"/>
+            <xsd:field xpath="@name"/>
+        </xsd:unique>
     </xsd:element>
 
     <xsd:attributeGroup name="MySQLTableAttribute">
@@ -104,7 +113,6 @@
         <xsd:attribute name="length" type="xsd:string"/>
         <xsd:attribute name="defaultValue" type="xsd:string"/>
         <xsd:attribute name="isPrimaryKey" type="xsd:boolean" default="false"/>
-        <xsd:attribute name="key" type="DbKey" default=""/>
         <xsd:attribute name="isNotNull" type="xsd:boolean" default="false"/>
         <xsd:attribute name="isUnsigned" type="xsd:boolean" default="false"/>
         <xsd:attribute name="isAutoIncrement" type="xsd:boolean" default="false"/>
@@ -134,17 +142,6 @@
             <xsd:enumeration value="ARCHIVE"/>
             <xsd:enumeration value="BLACKHOLE"/>
             <xsd:enumeration value="CSV"/>
-        </xsd:restriction>
-    </xsd:simpleType>
-
-    <xsd:simpleType name="DbKey">
-        <xsd:annotation>
-            <xsd:documentation><![CDATA[ MySQL数据库索引的枚举. ]]></xsd:documentation>
-        </xsd:annotation>
-        <xsd:restriction base="xsd:NMTOKEN">
-            <xsd:enumeration value="PRI"/>
-            <xsd:enumeration value="UNI"/>
-            <xsd:enumeration value="MUL"/>
         </xsd:restriction>
     </xsd:simpleType>
 
