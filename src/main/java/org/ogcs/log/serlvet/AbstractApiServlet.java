@@ -13,6 +13,7 @@ import java.util.Map;
 
 
 /**
+ * 内置response用于返回页面json信息
  * @author TinyZ
  * @date 2016-09-17.
  */
