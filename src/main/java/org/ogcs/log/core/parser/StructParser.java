@@ -33,12 +33,18 @@ public interface StructParser<T> {
      * Struct table lab. The table defined mysql table attribute and field data.
      */
     String STRUCT_TABLE = "table";
-
     /**
      * Struct field lab, The field element is table's child element. use to defined field attribute.
      */
     String STRUCT_FIELD = "field";
-
+    /**
+     * table element 's child element. Use to defined database's index list.
+     */
+    String STRUCT_INDEXES = "indexes";
+    /**
+     * indexes element 's child element. Use to defined database's index.
+     */
+    String STRUCT_INDEX = "index";
     /**
      * Get {@link Table}  form tables pool by unique tableName.
      * <p>The table name must be lowercase</p>

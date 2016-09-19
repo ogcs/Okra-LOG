@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-<okra-log xmlns="http://tinyzzh.github.io/schema/okra-log" version="1.0">
+<okra-log xmlns="http://tinyzzh.github.io/schema/okra-log.xsd" version="1.0">
 
     <table name="log_money" desc="货币变更日志表" adorn="DATE" suffix="yyyy-MM-dd">
         <indexes>
-            <index>
-                <field name="logDate"/>
-                <field name="openId"/>
+            <index name="logDate_openId">
+                <column name="logDate"/>
+                <column name="openId"/>
+            </index>
+            <index name="logDate_openId1">
+                <column name="logDate"/>
+                <column name="openId"/>
             </index>
         </indexes>
-        <field name="logDate" type="DATETIME" desc="格式 YYYY-MM-DD HH:MM:SS" key="MUL"/>
-        <field name="openId" type="VARCHAR" length="50" key="MUL"/>
+        <field name="logDate" type="DATETIME" desc="格式 YYYY-MM-DD HH:MM:SS"/>
+        <field name="openId" type="VARCHAR" length="50"/>
 
         <field name="io" type="TINYINT" desc="产出(1)/消耗(0)"/>
         <field name="ioType" type="INT" desc="途径"/>
@@ -53,6 +57,5 @@
         <field name="value" type="INT" desc="道具变动数量"/>
         <field name="leftCount" type="INT" desc="变更之后道具数量"/>
     </table>
-
 </okra-log>
 

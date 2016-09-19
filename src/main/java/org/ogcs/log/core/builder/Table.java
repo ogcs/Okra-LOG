@@ -39,6 +39,10 @@ public class Table<F extends Field> {
     private String desc;
     private int autoIncrement = 1;
     private F[] fields;
+    /**
+     * 表索引
+     */
+    private KeyIndex[] indexes;
     //
     private String adorn;   //  后缀类型
     private String suffix;  //  后缀字符串
@@ -187,6 +191,14 @@ public class Table<F extends Field> {
 
     public void setFields(F[] fields) {
         this.fields = fields;
+    }
+
+    public KeyIndex[] getIndexes() {
+        return indexes;
+    }
+
+    public void setIndexes(KeyIndex[] indexes) {
+        this.indexes = indexes;
     }
 
     @Override
