@@ -38,6 +38,7 @@ public class TableBuilder<F extends Field> implements Builder<Table<F>> {
     private String desc;
     private int incr;
     private F[] fields;
+    private KeyIndex[] indexes;
 
     private TableBuilder() {
         //no-op
@@ -98,6 +99,11 @@ public class TableBuilder<F extends Field> implements Builder<Table<F>> {
 
     public TableBuilder setFields(F[] fields) {
         this.fields = fields;
+        return this;
+    }
+
+    public TableBuilder setIndexes(KeyIndex[] indexes) {
+        this.indexes = indexes;
         return this;
     }
 }
