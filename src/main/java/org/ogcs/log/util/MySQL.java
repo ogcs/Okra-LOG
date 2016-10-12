@@ -18,10 +18,7 @@ package org.ogcs.log.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ogcs.log.core.builder.Field;
-import org.ogcs.log.core.builder.FieldBuilder;
-import org.ogcs.log.core.builder.Table;
-import org.ogcs.log.core.builder.TableBuilder;
+import org.ogcs.log.core.builder.*;
 import org.ogcs.utilities.StringUtil;
 
 import java.sql.Connection;
@@ -29,7 +26,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.ogcs.log.util.MySQL.DataType.*;
 
@@ -87,7 +86,27 @@ public final class MySQL {
                     }
                     // 3. Index information
                     if (stat.execute(showIndexSQL(database, tableName))) {
-
+                        ResultSet indexSet = stat.getResultSet();
+                        Map<String, List<String>> indexMap = new HashMap<>();
+                        while (indexSet.next()){
+                            String keyName = indexSet.getString("Key_name");
+                            List<String> list = indexMap.get(keyName);
+                            if (list == null) {
+                                list = new ArrayList<>();
+                                indexMap.put(keyName, list);
+                            }
+                            list.add(indexSet.getInt("Seq_in_index") - 1, indexSet.getString("Column_name"));
+                        }
+                        if (!indexMap.isEmpty()) {
+                            KeyIndex[] indexes = new KeyIndex[indexMap.size()];
+                            int i = 0;
+                            for (Map.Entry<String, List<String>> entry : indexMap.entrySet()) {
+                                final String[] ary = new String[entry.getValue().size()];
+                                indexes[i] = new KeyIndex(entry.getKey(), entry.getValue().toArray(ary));
+                                i++;
+                            }
+                            builder.setIndexes(indexes);
+                        }
                     }
                 }
             }

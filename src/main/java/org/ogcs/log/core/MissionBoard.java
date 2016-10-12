@@ -27,8 +27,8 @@ import org.ogcs.log.config.OkraConfig;
 import org.ogcs.log.core.builder.Table;
 import org.ogcs.log.core.handler.LogRecordTask;
 import org.ogcs.log.core.handler.LogRecordTaskHandler;
+import org.ogcs.log.core.parser.Dom4JParser;
 import org.ogcs.log.core.parser.StructParser;
-import org.ogcs.log.core.parser.W3cDomParser;
 import org.ogcs.service.SimpleTaskService;
 
 import javax.sql.DataSource;
@@ -46,7 +46,7 @@ import static org.ogcs.log.core.handler.LogRecordTaskFactory.DEFAULT_FACTORY;
  * 任务版.
  * <p>
  * 客户端上报日志到任务版. 服务端队列形式保存日志, 累计一定数量的日志触发批量写入事件, 提交记录任务到Disruptor，写入MySQL数据库.
- *
+ * <p>
  * Mission board.
  * Client report log to mission board.
  *
@@ -90,7 +90,7 @@ public class MissionBoard {
 //        this.disruptor.handleExceptionsWith(exceptionHandler);
         this.disruptor.start();
         //  Struct parser
-        this.parser = new W3cDomParser(config.getLogPath());
+        this.parser = new Dom4JParser(config.getLogPath());
         this.tasks = new SimpleTaskService();
 
         // schedule publish task
@@ -109,8 +109,9 @@ public class MissionBoard {
 
     /**
      * Add a log to struct task queue.
+     *
      * @param tableName The table struct name.
-     * @param params The log data.
+     * @param params    The log data.
      */
     public void add(String tableName, String[] params) {
         Struct struct = board.get(tableName);
@@ -124,8 +125,9 @@ public class MissionBoard {
 
     /**
      * Publish record task to record special table's log.
+     *
      * @param struct The table struct.
-     * @param list The log data list.
+     * @param list   The log data list.
      */
     public void publish(Struct struct, List<String[]> list) {
         RingBuffer<LogRecordTask> rb = disruptor.getRingBuffer();
@@ -154,6 +156,7 @@ public class MissionBoard {
 
     /**
      * Get database connection.
+     *
      * @return Return database connection.
      * @throws SQLException
      */
@@ -166,6 +169,7 @@ public class MissionBoard {
 
     /**
      * Get the struct parser.
+     *
      * @return Return the struct parser.
      */
     public StructParser<Table> getParser() {
@@ -174,6 +178,7 @@ public class MissionBoard {
 
     /**
      * Get Okra-LOG config.
+     *
      * @return Return custom settings.
      */
     public final OkraConfig getConfig() {

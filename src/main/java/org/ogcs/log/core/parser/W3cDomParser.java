@@ -111,12 +111,18 @@ public final class W3cDomParser implements StructParser<Table> {
                             } else if (STRUCT_INDEXES.equals(fieldNode.getNodeName())) {
                                 NodeList nodeListIndexes = fieldNode.getChildNodes();
                                 if (nodeListIndexes != null && nodeListIndexes.getLength() > 0) {
-                                    String kiName = fieldNode.getAttributes().getNamedItem("name").getNodeValue();
-                                    String[] columns = new String[nodeListIndexes.getLength()];
                                     for (int i1 = 0; i1 < nodeListIndexes.getLength(); i1++) {
-                                        columns[i1] = nodeListIndexes.item(i1).getAttributes().getNamedItem("name").getNodeValue();
+                                        Node nodeIndex = nodeListIndexes.item(i1);
+                                        if (STRUCT_INDEX.equals(nodeIndex.getNodeName())) {
+                                            String kiName = nodeIndex.getAttributes().getNamedItem("name").getNodeValue();
+                                            String[] columns = new String[nodeIndex.getChildNodes().getLength()];
+                                            NodeList nicn = nodeIndex.getChildNodes();
+                                            for (int i2 = 0; i2 < nicn.getLength(); i2++) {
+                                                columns[i2] = nicn.item(i2).getAttributes().getNamedItem("name").getNodeValue();
+                                            }
+                                            arrayKeyIndex.add(new KeyIndex(kiName, columns));
+                                        }
                                     }
-                                    arrayKeyIndex.add(new KeyIndex(kiName, columns));
                                 }
                             }
                         }

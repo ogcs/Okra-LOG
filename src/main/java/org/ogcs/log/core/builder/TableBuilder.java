@@ -59,7 +59,7 @@ public class TableBuilder<F extends Field> implements Builder<Table<F>> {
         if (StringUtil.isEmpty(collate))
             this.collate = DEFAULT_COLLATE;
         incr = incr < 0 ? 0 : incr;
-        return new Table<>(database, name, engine, charset, collate, desc, incr, fields);
+        return new Table<>(database, name, engine, charset, collate, desc, incr, fields, indexes);
     }
 
     public TableBuilder setDatabase(String database) {
