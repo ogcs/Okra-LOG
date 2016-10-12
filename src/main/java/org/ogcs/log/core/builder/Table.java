@@ -65,14 +65,14 @@ public class Table<F extends Field> {
      * @param desc   Database table's description.
      */
     public Table(String name, F[] fields, String desc) {
-        this(null, name, TableBuilder.DEFAULT_DB_ENGINE, TableBuilder.DEFAULT_CHARSET, TableBuilder.DEFAULT_COLLATE, desc, 0, fields);
+        this(null, name, TableBuilder.DEFAULT_DB_ENGINE, TableBuilder.DEFAULT_CHARSET, TableBuilder.DEFAULT_COLLATE, desc, 0, fields, null);
     }
 
     public Table(String database, String name, F[] fields, String desc) {
-        this(database, name, TableBuilder.DEFAULT_DB_ENGINE, TableBuilder.DEFAULT_CHARSET, TableBuilder.DEFAULT_COLLATE, desc, 0, fields);
+        this(database, name, TableBuilder.DEFAULT_DB_ENGINE, TableBuilder.DEFAULT_CHARSET, TableBuilder.DEFAULT_COLLATE, desc, 0, fields, null);
     }
 
-    public Table(String database, String name, String dbEngine, String charset, String collate, String desc, int autoIncrement, F[] fields) {
+    public Table(String database, String name, String dbEngine, String charset, String collate, String desc, int autoIncrement, F[] fields, KeyIndex[] indexes) {
         this.database = database;
         this.name = name;
         this.dbEngine = dbEngine;
@@ -81,6 +81,7 @@ public class Table<F extends Field> {
         this.desc = desc;
         this.autoIncrement = autoIncrement;
         this.fields = fields;
+        this.indexes = indexes;
     }
 
     /**
