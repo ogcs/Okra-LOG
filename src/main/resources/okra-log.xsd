@@ -82,6 +82,7 @@
                 </xsd:element>
             </xsd:sequence>
             <xsd:attribute name="name" type="StrName" use="required"/>
+            <xsd:attribute name="type" type="IndexType" use="optional"/>
         </xsd:complexType>
         <xsd:unique name="uniqueColumnName">
             <xsd:selector xpath="okra-log:column"/>
@@ -121,6 +122,18 @@
         <xsd:attribute name="collate" type="StrName" default="utf8_general_ci"/>
         <xsd:attribute name="desc" type="xsd:string"/>
     </xsd:attributeGroup>
+
+    <xsd:simpleType name="IndexType">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ MySQL数据库的索引类型枚举. ]]></xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="PRIMARY"/>
+            <xsd:enumeration value="UNIQUE"/>
+            <xsd:enumeration value="FULLTEXT"/>
+            <xsd:enumeration value=""/>
+        </xsd:restriction>
+    </xsd:simpleType>
 
     <xsd:simpleType name="StrName">
         <xsd:annotation>

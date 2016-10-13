@@ -87,22 +87,30 @@ public final class MySQL {
                     // 3. Index information
                     if (stat.execute(showIndexSQL(database, tableName))) {
                         ResultSet indexSet = stat.getResultSet();
-                        Map<String, List<String>> indexMap = new HashMap<>();
-                        while (indexSet.next()){
+                        Map<String, Pair<String, List<String>>> ixMap = new HashMap<>();
+                        while (indexSet.next()) {
                             String keyName = indexSet.getString("Key_name");
-                            List<String> list = indexMap.get(keyName);
-                            if (list == null) {
-                                list = new ArrayList<>();
-                                indexMap.put(keyName, list);
+                            Pair<String, List<String>> pair = ixMap.get(keyName);
+                            if (pair == null) {
+                                pair = new Pair<>("", new ArrayList<>());
+                                ixMap.put(keyName, pair);
                             }
-                            list.add(indexSet.getInt("Seq_in_index") - 1, indexSet.getString("Column_name"));
+                            pair.getValue().add(indexSet.getInt("Seq_in_index") - 1, indexSet.getString("Column_name"));
+                            //  索引分类
+                            if (keyName.equals("PRIMARY")) {
+                                pair.setLeft("PRIMARY");
+                            } else if ("FULLTEXT".equals(indexSet.getString("Index_type"))){
+                                pair.setLeft("FULLTEXT");
+                            } else if (0 == indexSet.getInt("Non_unique")) {
+                                pair.setLeft("UNIQUE");
+                            }
                         }
-                        if (!indexMap.isEmpty()) {
-                            KeyIndex[] indexes = new KeyIndex[indexMap.size()];
+                        if (!ixMap.isEmpty()) {
+                            KeyIndex[] indexes = new KeyIndex[ixMap.size()];
                             int i = 0;
-                            for (Map.Entry<String, List<String>> entry : indexMap.entrySet()) {
-                                final String[] ary = new String[entry.getValue().size()];
-                                indexes[i] = new KeyIndex(entry.getKey(), entry.getValue().toArray(ary));
+                            for (Map.Entry<String, Pair<String, List<String>>> entry : ixMap.entrySet()) {
+                                final String[] ary = new String[entry.getValue().getRight().size()];
+                                indexes[i] = new KeyIndex(entry.getKey(), entry.getValue().getLeft(), entry.getValue().getRight().toArray(ary));
                                 i++;
                             }
                             builder.setIndexes(indexes);
@@ -373,12 +381,51 @@ public final class MySQL {
                 priBuilder.append("`").append(fields[i].getName()).append("`,");
             }
         }
-        if (priBuilder != null && priBuilder.length() > 0) {
-            priBuilder.delete(priBuilder.length() - 1, priBuilder.length()).insert(0, ", \n PRIMARY KEY (").append(")");
-            builder.append(priBuilder);
-        }
+//        if (priBuilder != null && priBuilder.length() > 0) {
+//            priBuilder.delete(priBuilder.length() - 1, priBuilder.length()).insert(0, ", \n PRIMARY KEY (").append(")");
+//            builder.append(priBuilder);
+//        }
+        builder.append(indexesSQL(table.getIndexes()));
+
         StringBuilder append = builder.append("\n)").append(tableAttributeSQL(table)).append(";");
         return String.valueOf(append);
+    }
+
+//    PRIMARY KEY (`teamId`),
+//    UNIQUE KEY `name` (`name`),
+//    FULLTEXT KEY `name` (`name`),
+//    KEY `teamExp` (`teamExp`),
+//    KEY `name_2` (`name`,`createCharId`)
+
+    public static StringBuilder indexesSQL(KeyIndex[] keyIndexes) {
+        StringBuilder sb = new StringBuilder();
+        if (keyIndexes == null)
+            return sb;
+        for (KeyIndex keyIndex : keyIndexes) {
+            if (sb.length() > 0) {
+                sb.append(",\n");
+            }
+            if (keyIndex.getIndexType() != null) {
+                sb.append(keyIndex.getIndexType());
+            }
+            sb.append(" KEY ");
+            if (!"PRIMARY".equals(keyIndex.getIndexType())) {
+                sb.append("`").append(keyIndex.getName()).append("` ");
+            }
+            sb.append("(");
+            String[] columns = keyIndex.getColumns();
+            for (int i = 0; i < columns.length; i++) {
+                if (i > 0) {
+                    sb.append(",");
+                }
+                sb.append("`").append(columns[i]).append("`");
+            }
+            sb.append(")");
+        }
+        if (sb.length() > 0) {
+            sb.insert(0, "\n");
+        }
+        return sb;
     }
 
     /**
@@ -387,7 +434,7 @@ public final class MySQL {
      * </pre>
      *
      * @param builder The String builder.
-     * @param field The table's field.
+     * @param field   The table's field.
      * @return Return The String builder.
      */
     public static StringBuilder fieldCreateSQL(StringBuilder builder, Field field) {
@@ -400,7 +447,7 @@ public final class MySQL {
      * </pre>
      *
      * @param lastColumnName The table last column's name.
-     * @param field The table's field.
+     * @param field          The table's field.
      * @return Return query SQL.
      */
     public static String fieldAddColumnSQL(String lastColumnName, Field field) {
@@ -566,6 +613,7 @@ public final class MySQL {
 
     /**
      * MySQL Data Type
+     *
      * @since 1.0
      */
     public interface DataType {
