@@ -423,7 +423,7 @@ public final class MySQL {
             sb.append(")");
         }
         if (sb.length() > 0) {
-            sb.insert(0, "\n");
+            sb.insert(0, ", \n");
         }
         return sb;
     }
