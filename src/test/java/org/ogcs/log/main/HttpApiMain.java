@@ -7,6 +7,8 @@ import org.ogcs.log.config.OkraProperties;
 import org.ogcs.log.core.MissionBoard;
 import org.ogcs.log.core.server.HttpLogServer;
 import org.ogcs.log.serlvet.ApiHandler;
+import org.ogcs.log.serlvet.ApiServer;
+import org.ogcs.log.serlvet.grafana.GrafanaUtil;
 import org.ogcs.log.serlvet.impl.AdminServlet;
 
 /**
@@ -19,15 +21,20 @@ public class HttpApiMain {
     public static void main(String[] args) {
         LOG.info("Bootstrap Okra-LOG ...");
         HttpLogServer server = null;
+        ApiServer apiServer = null;
         try {
             OkraConfig config = OkraProperties.getConfig();
             MissionBoard missionBoard = new MissionBoard(config);
             missionBoard.init();
 
-            ApiHandler.register("/api.action", new AdminServlet());
-
             server = new HttpLogServer(config.getPort(), missionBoard);
             server.start();
+
+            ApiHandler.register("/api.action", new AdminServlet());
+            GrafanaUtil.register();
+
+            apiServer = new ApiServer(9006);
+            apiServer.start();
             LOG.info("Okra-LOG bootstrap success.");
         } catch (Exception e) {
             if (server != null)
