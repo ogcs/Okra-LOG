@@ -10,6 +10,7 @@ import org.dom4j.io.SAXReader;
 import org.ogcs.log.core.builder.Field;
 import org.ogcs.log.core.builder.KeyIndex;
 import org.ogcs.log.core.builder.Table;
+import org.ogcs.log.util.Pair;
 import org.ogcs.log.util.XmlUtil;
 import org.ogcs.utilities.StringUtil;
 
@@ -140,10 +141,11 @@ public class Dom4JParser implements StructParser<Table> {
                 //  索引
                 Element eleIndexes = nodeTable.element(STRUCT_INDEXES);
                 if (eleIndexes != null) {
-                    Map<String, String[]> tempIndexes = new HashMap<>();
+                    Map<String, Pair<String, String[]>> tempIndexes = new HashMap<>();
                     eleIndexes.elements(STRUCT_INDEX).forEach((c2) -> {
                         Element nodeIndex = (Element) c2;
                         Attribute attrName = nodeIndex.attribute("name");
+                        Attribute attrType = nodeIndex.attribute("type");
                         List<Element> columnList = nodeIndex.elements();
                         if (!columnList.isEmpty()) {
                             String[] columns = new String[columnList.size()];
@@ -151,11 +153,12 @@ public class Dom4JParser implements StructParser<Table> {
                                 columns[i] = columnList.get(i).attribute("name").getValue();
                             }
                             String kiName = attrName == null ? StringUtil.implode(columns, '_') : attrName.getValue();
-                            tempIndexes.put(kiName, columns);
+                            String indexType = attrType == null ? null : attrType.getValue();
+                            tempIndexes.put(kiName, new Pair<>(indexType, columns));
                         }
                     });
                     if (!tempIndexes.isEmpty()) {
-                        List<KeyIndex> arrayKeyIndex = tempIndexes.entrySet().stream().map(entry -> new KeyIndex(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+                        List<KeyIndex> arrayKeyIndex = tempIndexes.entrySet().stream().map(entry -> new KeyIndex(entry.getKey(), entry.getValue().getLeft(), entry.getValue().getRight())).collect(Collectors.toList());
                         final KeyIndex[] fAry = (KeyIndex[]) Array.newInstance(KeyIndex.class, arrayKeyIndex.size());
                         table.setIndexes(arrayKeyIndex.toArray(fAry));
                     }

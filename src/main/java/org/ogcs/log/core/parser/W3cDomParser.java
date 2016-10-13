@@ -43,6 +43,7 @@ import java.util.Map;
  * XML Document Object Model(XML DOM).
  * <p>Use JDK DOM API to interpreter xml log struct defined file</p>
  *
+ * @deprecated 废弃，Java的Dom API操作麻烦。使用Dom4J代替
  * @author TinyZ
  * @date 2016-06-24.
  * @since 1.0
@@ -120,7 +121,7 @@ public final class W3cDomParser implements StructParser<Table> {
                                             for (int i2 = 0; i2 < nicn.getLength(); i2++) {
                                                 columns[i2] = nicn.item(i2).getAttributes().getNamedItem("name").getNodeValue();
                                             }
-                                            arrayKeyIndex.add(new KeyIndex(kiName, columns));
+//                                            arrayKeyIndex.add(new KeyIndex(kiName, columns));
                                         }
                                     }
                                 }

@@ -24,12 +24,22 @@ package org.ogcs.log.core.builder;
  */
 public class KeyIndex {
 
+    private String indexType;
     private String name;
     private String[] columns;
 
-    public KeyIndex(String name, String[] columns) {
+    public KeyIndex(String name, String indexType, String[] columns) {
+        this.indexType = indexType;
         this.name = name;
         this.columns = columns;
+    }
+
+    public String getIndexType() {
+        return indexType;
+    }
+
+    public void setIndexType(String indexType) {
+        this.indexType = indexType;
     }
 
     public String getName() {

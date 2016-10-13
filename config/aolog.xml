@@ -7,7 +7,7 @@
                 <column name="logDate"/>
                 <column name="openId"/>
             </index>
-            <index name="logDate_openId1">
+            <index name="logDate_openId1" type="UNIQUE">
                 <column name="logDate"/>
                 <column name="openId"/>
             </index>
